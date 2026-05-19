@@ -19,8 +19,8 @@ export default {
         },
       },
       boxShadow: {
-        card: "0 1px 3px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(37, 99, 235, 0.08)",
-        hero: "0 4px 6px rgba(15, 23, 42, 0.04), 0 20px 48px rgba(37, 99, 235, 0.12)",
+        card: "0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 16px rgba(15, 23, 42, 0.04)",
+        hero: "0 1px 2px rgba(15, 23, 42, 0.08), 0 16px 32px rgba(15, 23, 42, 0.08)",
       },
       fontFamily: {
         sans: [

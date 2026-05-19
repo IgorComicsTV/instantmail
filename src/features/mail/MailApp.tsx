@@ -9,12 +9,8 @@ import {
   Loader2,
   Mail,
   RefreshCw,
-  Shield,
-  Sparkles,
   Trash2,
-  UserRound,
   X,
-  Zap,
 } from "lucide-react";
 import {
   createAccount,
@@ -29,8 +25,9 @@ import {
   type MailMessage,
   type MailMessageSummary,
 } from "../../lib/mailtm";
+import { LanguageMenu } from "../../components/ui/LanguageMenu";
 import { SiteLogo } from "../../components/ui/SiteLogo";
-import { aboutInstantMailSections } from "./seoContent";
+import { type LanguageContent } from "./i18n";
 import {
   clearSession,
   loadSession,
@@ -41,91 +38,35 @@ import {
 
 type Status = "idle" | "creating" | "refreshing" | "reading" | "copying";
 type MessageModalState = "closed" | "loading" | "ready" | "error";
+type MailAppProps = {
+  content: LanguageContent;
+  basePath: string;
+};
 
 const POLL_INTERVAL_MS = 8000;
 const INITIAL_REFRESH_DELAY_MS = 1400;
 
-const features = [
-  {
-    icon: Zap,
-    title: "Instant inbox",
-    description:
-      "Your temporary address is ready the moment you open Instant Mail. No setup, no waiting.",
-  },
-  {
-    icon: Shield,
-    title: "Privacy protection",
-    description:
-      "Keep sign-ups, downloads, and verification flows away from your personal email address.",
-  },
-  {
-    icon: Mail,
-    title: "Spam-free signups",
-    description:
-      "Use a disposable inbox for one-time messages and stop newsletters from flooding your main inbox.",
-  },
-  {
-    icon: UserRound,
-    title: "No registration",
-    description:
-      "No account, no password, no forms. Copy your email and start receiving messages immediately.",
-  },
-];
-
-const faqs = [
-  {
-    question: "What is Instant Mail?",
-    answer:
-      "Instant Mail is a free temporary email service. It gives you a disposable inbox you can use for sign-ups, verification codes, and short-term online activity without exposing your real email.",
-  },
-  {
-    question: "How do I use my temporary email?",
-    answer:
-      "Copy the address shown on the page, paste it wherever a website asks for email, then return here. Incoming messages appear in your inbox automatically.",
-  },
-  {
-    question: "Do I need to create an account?",
-    answer:
-      "No. Instant Mail works instantly with no registration, no password, and no personal details required.",
-  },
-  {
-    question: "How long does the inbox last?",
-    answer:
-      "Your session stays available while you keep this page open. You can generate a new address anytime with the change button.",
-  },
-  {
-    question: "Is temporary email safe?",
-    answer:
-      "It is great for low-risk use like verifications and test sign-ups. Do not use it for banking, payments, or accounts you may need to recover later.",
-  },
-  {
-    question: "Why is my inbox empty?",
-    answer:
-      "Messages arrive only after a website sends mail to your address. Keep this tab open and refresh if needed. New emails will show up here.",
-  },
-];
-
-function formatDate(value?: string) {
+function formatDate(value: string | undefined, locale: string, fallback: string) {
   if (!value) {
-    return "Not updated yet";
+    return fallback;
   }
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
   }).format(new Date(value));
 }
 
-function formatMessageDate(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
+function formatMessageDate(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
 }
 
-function formatInboxTime(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
+function formatInboxTime(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
@@ -273,7 +214,7 @@ function getAttachments(message?: MailMessage | null) {
   return Array.isArray(message?.attachments) ? message.attachments : [];
 }
 
-export function MailApp() {
+export function MailApp({ content: t, basePath }: MailAppProps) {
   const [session, setSession] = useState<MailSession | null>(() => loadSession());
   const [messages, setMessages] = useState<MailMessageSummary[]>([]);
   const [activeMessageSummary, setActiveMessageSummary] =
@@ -330,7 +271,7 @@ export function MailApp() {
         setError(
           refreshError instanceof Error
             ? refreshError.message
-            : "Could not refresh the inbox.",
+            : t.errors.refresh,
         );
       } finally {
         refreshInFlight.current = false;
@@ -339,7 +280,7 @@ export function MailApp() {
         }
       }
     },
-    [persistSession, session],
+    [persistSession, session, t.errors.refresh],
   );
 
   const createMailbox = useCallback(async () => {
@@ -361,7 +302,7 @@ export function MailApp() {
       const domain = domains[0]?.domain;
 
       if (!domain) {
-        throw new Error("No domains are available right now.");
+        throw new Error(t.errors.noDomains);
       }
 
       const password = makePassword();
@@ -382,13 +323,13 @@ export function MailApp() {
       setError(
         createError instanceof Error
           ? createError.message
-          : "Could not create a temporary email address.",
+          : t.errors.create,
       );
     } finally {
       createInFlight.current = false;
       setStatus("idle");
     }
-  }, [persistSession]);
+  }, [persistSession, t.errors.create, t.errors.noDomains]);
 
   const copyAddress = async () => {
     if (!session?.address) {
@@ -401,7 +342,7 @@ export function MailApp() {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
-      setError("Could not copy automatically. Select and copy the address instead.");
+      setError(t.errors.copy);
     } finally {
       setStatus("idle");
     }
@@ -442,7 +383,7 @@ export function MailApp() {
       setMessageModalError(
         readError instanceof Error
           ? readError.message
-          : "Could not open this message.",
+          : t.errors.open,
       );
       setMessageModalState("error");
     } finally {
@@ -480,14 +421,14 @@ export function MailApp() {
     if (!session?.token) {
       setAttachmentStatus((currentStatus) => ({
         ...currentStatus,
-        [attachment.id]: "No active email session is available for this download.",
+        [attachment.id]: t.errors.noSessionDownload,
       }));
       return;
     }
 
     setAttachmentStatus((currentStatus) => ({
       ...currentStatus,
-      [attachment.id]: "Downloading...",
+      [attachment.id]: t.errors.downloading,
     }));
 
     try {
@@ -503,7 +444,7 @@ export function MailApp() {
 
       setAttachmentStatus((currentStatus) => ({
         ...currentStatus,
-        [attachment.id]: "Downloaded.",
+        [attachment.id]: t.errors.downloaded,
       }));
     } catch (downloadError) {
       setAttachmentStatus((currentStatus) => ({
@@ -511,7 +452,7 @@ export function MailApp() {
         [attachment.id]:
           downloadError instanceof Error
             ? downloadError.message
-            : "Could not download attachment.",
+            : t.errors.download,
       }));
     }
   };
@@ -527,6 +468,9 @@ export function MailApp() {
     () => getAttachments(activeMessageDetail),
     [activeMessageDetail],
   );
+  const activeSenderName =
+    activeMessageSummary?.from.name || activeMessageSummary?.from.address || "";
+  const activeSenderEmail = activeMessageSummary?.from.address || "";
 
   useEffect(() => {
     if (!session) {
@@ -572,87 +516,87 @@ export function MailApp() {
   }, [closeMessage, messageModalState]);
 
   return (
-    <main className="min-h-screen text-slate-900">
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <a className="flex items-center gap-2.5" href="/" aria-label="Instant Mail home">
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <a className="flex items-center gap-2.5" href={`${basePath}/`} aria-label="Instant Mail home">
             <SiteLogo className="h-9 w-9" size={36} />
             <span className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
               Instant Mail
             </span>
           </a>
           <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
-            <a className="transition hover:text-brand-600" href="#inbox">
-              Inbox
+            <a className="transition hover:text-brand-600" href={`${basePath}/#inbox`}>
+              {t.nav.inbox}
             </a>
-            <a className="transition hover:text-brand-600" href="#features">
-              Features
+            <a className="transition hover:text-brand-600" href={`${basePath}/#features`}>
+              {t.nav.features}
             </a>
-            <a className="transition hover:text-brand-600" href="#faq">
-              FAQ
+            <a className="transition hover:text-brand-600" href={`${basePath}/#faq`}>
+              {t.nav.faq}
             </a>
-            <a className="transition hover:text-brand-600" href="#about">
-              About
+            <a className="transition hover:text-brand-600" href={`${basePath}/#about`}>
+              {t.nav.about}
             </a>
           </nav>
-          <a
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
-            href="#inbox"
-          >
-            Open inbox
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              className="inline-flex h-10 items-center justify-center rounded-md bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+              href={`${basePath}/#inbox`}
+            >
+              {t.nav.openInbox}
+            </a>
+            <LanguageMenu current={t.code} hrefFor={(code) => `/${code}/`} />
+          </div>
         </div>
       </header>
 
-      <section className="relative overflow-hidden px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-14">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-brand-50 to-transparent" />
-        <div className="relative mx-auto max-w-3xl text-center">
-          <p className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">
-            <Sparkles aria-hidden="true" size={14} />
-            No registration · Instant access
+      <section className="px-4 pb-12 pt-10 sm:px-6 sm:pb-16 sm:pt-14">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-xs font-semibold text-brand-700">
+            {t.hero.note}
           </p>
-          <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl sm:leading-tight">
-            Instant Temporary Email,
-            <span className="text-brand-600"> Ready in Seconds</span>
+          <h1 className="mt-5 text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl sm:leading-tight">
+            {t.hero.h1Start}
+            <span className="text-brand-600">{t.hero.h1Accent}</span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
-            Instant Mail gives you a disposable inbox for sign-ups, verification codes,
-            and one-time messages without spam reaching your real email.
+            {t.hero.body}
           </p>
 
-          <div className="mx-auto mt-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-hero sm:p-6">
+          <div className="mx-auto mt-8 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
             <p className="mb-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-              Your temporary email
+              {t.hero.emailLabel}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
               <label className="sr-only" htmlFor="current-email">
-                Current temporary email address
+                {t.hero.emailAria}
               </label>
               <input
                 id="current-email"
                 readOnly
-                value={session?.address ?? "Creating your address..."}
-                className="min-h-12 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 text-center text-base font-semibold text-slate-900 outline-none transition focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-500/20 sm:text-left sm:text-lg"
+                value={session?.address ?? t.hero.creatingAddress}
+                className="min-h-12 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-4 text-center text-base font-semibold text-slate-900 outline-none transition focus:border-brand-500 focus:bg-white focus:ring-2 focus:ring-brand-500/20 sm:text-left sm:text-lg"
                 aria-live="polite"
               />
               <button
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:opacity-60"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-brand-600 px-6 text-sm font-semibold text-white transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:opacity-60"
                 disabled={!session || isBusy}
                 onClick={copyAddress}
                 type="button"
               >
                 {copied ? <Check size={18} /> : <Copy size={18} />}
-                {copied ? "Copied" : "Copy email"}
+                {copied ? t.hero.copied : t.hero.copyEmail}
               </button>
             </div>
 
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
               <button
                 aria-label="Refresh inbox"
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-60"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-60"
                 disabled={!session || isBusy}
                 onClick={() => void refreshMessages()}
-                title="Refresh"
+                title={t.hero.refresh}
                 type="button"
               >
                 {status === "refreshing" ? (
@@ -660,42 +604,42 @@ export function MailApp() {
                 ) : (
                   <RefreshCw size={16} />
                 )}
-                Refresh
+                {t.hero.refresh}
               </button>
               <button
                 aria-label="Generate new email address"
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-60"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-60"
                 disabled={isBusy}
                 onClick={resetMailbox}
-                title="Change address"
+                title={t.hero.change}
                 type="button"
               >
                 <RefreshCw size={16} />
-                Change
+                {t.hero.change}
               </button>
               <button
                 aria-label="Delete and create new inbox"
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700 disabled:opacity-60"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700 disabled:opacity-60"
                 disabled={isBusy}
                 onClick={resetMailbox}
-                title="Delete inbox"
+                title={t.hero.delete}
                 type="button"
               >
                 <Trash2 size={16} />
-                Delete
+                {t.hero.delete}
               </button>
             </div>
 
             <p className="mt-4 text-left text-xs text-slate-500">
               {status === "creating"
-                ? "Generating your disposable address..."
-                : "Copy this address, use it anywhere, and your messages will appear below."}
+                ? t.hero.creatingStatus
+                : t.hero.readyStatus}
             </p>
           </div>
 
           {error ? (
             <div
-              className="mx-auto mt-4 max-w-3xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-left text-sm font-medium text-red-800"
+              className="mx-auto mt-4 max-w-3xl rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-left text-sm font-medium text-red-800"
               role="alert"
             >
               {error}
@@ -706,23 +650,27 @@ export function MailApp() {
 
       <section className="px-4 pb-16 sm:px-6" id="inbox">
         <div className="mx-auto max-w-6xl">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-6">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
             <div className="mb-6 flex flex-col justify-between gap-4 border-b border-slate-100 pb-6 sm:flex-row sm:items-end">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">
-                  Live inbox
+                  {t.inbox.label}
                 </p>
                 <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-                  Incoming messages
+                  {t.inbox.title}
                 </h2>
                 <p className="mt-2 text-sm text-slate-500">
-                  Updated {formatDate(session?.lastUpdatedAt)} · {messages.length}{" "}
-                  message{messages.length === 1 ? "" : "s"}
-                  {unreadCount > 0 ? ` · ${unreadCount} unread` : ""}
+                  {t.inbox.updated}{" "}
+                  {formatDate(session?.lastUpdatedAt, t.locale, t.inbox.notUpdated)} ·{" "}
+                  {messages.length}{" "}
+                  {messages.length === 1
+                    ? t.inbox.messageSingular
+                    : t.inbox.messagePlural}
+                  {unreadCount > 0 ? ` · ${unreadCount} ${t.inbox.unread}` : ""}
                 </p>
               </div>
               <button
-                className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60 sm:self-auto"
+                className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-md bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60 sm:self-auto"
                 disabled={!session || isBusy}
                 onClick={() => void refreshMessages()}
                 type="button"
@@ -732,68 +680,67 @@ export function MailApp() {
                 ) : (
                   <RefreshCw size={16} />
                 )}
-                Refresh inbox
+                {t.inbox.refreshInbox}
               </button>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-slate-200">
+            <div className="overflow-hidden rounded-lg border border-slate-200">
               <div className="hidden grid-cols-[1.2fr_1.4fr_100px_80px] gap-4 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 md:grid">
-                <span>Sender</span>
-                <span>Subject</span>
-                <span>Time</span>
-                <span className="text-right">Action</span>
+                <span>{t.inbox.sender}</span>
+                <span>{t.inbox.subject}</span>
+                <span>{t.inbox.time}</span>
+                <span className="text-right">{t.inbox.action}</span>
               </div>
 
               {messages.length === 0 ? (
                 <div className="flex min-h-[240px] flex-col items-center justify-center bg-white px-6 py-12 text-center">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
                     <Inbox aria-hidden="true" size={28} />
                   </div>
                   <h3 className="text-lg font-bold text-slate-900">
-                    Your inbox is empty. Waiting for incoming emails.
+                    {t.inbox.emptyTitle}
                   </h3>
                   <p className="mt-2 max-w-md text-sm leading-relaxed text-slate-500">
-                    Paste your Instant Mail address on any website. Messages will show up
-                    here automatically while this page stays open.
+                    {t.inbox.emptyBody}
                   </p>
                 </div>
               ) : (
                 <ul className="divide-y divide-slate-100 bg-white">
                   {messages.map((message) => (
                     <li key={message.id}>
-                      <div className="grid gap-3 px-4 py-4 transition hover:bg-brand-50/50 md:grid-cols-[1.2fr_1.4fr_100px_80px] md:items-center md:gap-4">
+                      <div className="grid gap-3 px-4 py-4 transition hover:bg-slate-50 md:grid-cols-[1.2fr_1.4fr_100px_80px] md:items-center md:gap-4">
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold text-slate-900">
                             {message.from.name || message.from.address}
                           </p>
                           <p className="truncate text-xs text-slate-500 md:hidden">
-                            {formatInboxTime(message.createdAt)}
+                            {formatInboxTime(message.createdAt, t.locale)}
                           </p>
                         </div>
                         <div className="min-w-0">
                           <p className="truncate text-sm font-semibold text-slate-900">
-                            {message.subject || "No subject"}
+                            {message.subject || t.inbox.noSubject}
                             {!message.seen ? (
-                              <span className="ml-2 inline-flex rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-700">
-                                New
+                              <span className="ml-2 inline-flex rounded bg-brand-100 px-2 py-0.5 text-[10px] font-bold uppercase text-brand-700">
+                                {t.inbox.new}
                               </span>
                             ) : null}
                           </p>
                           <p className="mt-0.5 line-clamp-1 text-sm text-slate-500">
-                            {message.intro || "Open to read the full message."}
+                            {message.intro || t.inbox.introFallback}
                           </p>
                         </div>
                         <p className="hidden text-sm text-slate-500 md:block">
-                          {formatInboxTime(message.createdAt)}
+                          {formatInboxTime(message.createdAt, t.locale)}
                         </p>
                         <div className="md:text-right">
                           <button
-                            className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-brand-600 px-3 text-sm font-semibold text-white transition hover:bg-brand-700 md:w-auto"
+                            className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-md bg-brand-600 px-3 text-sm font-semibold text-white transition hover:bg-brand-700 md:w-auto"
                             onClick={() => void openMessage(message)}
                             type="button"
                           >
                             <Eye size={15} />
-                            View
+                            {t.inbox.view}
                           </button>
                         </div>
                       </div>
@@ -810,25 +757,24 @@ export function MailApp() {
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">
-              Why Instant Mail
+              {t.featuresIntro.label}
             </p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              Fast, private, and built for everyday sign-ups
+              {t.featuresIntro.title}
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
-              Everything you need from a temp mail service without friction, clutter, or
-              dark patterns.
+              {t.featuresIntro.body}
             </p>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((feature) => {
+            {t.features.map((feature) => {
               const Icon = feature.icon;
               return (
                 <article
-                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-brand-200 hover:shadow-card"
+                  className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-brand-200"
                   key={feature.title}
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
                     <Icon aria-hidden="true" size={20} />
                   </div>
                   <h3 className="mt-4 text-base font-bold text-slate-900">{feature.title}</h3>
@@ -846,18 +792,18 @@ export function MailApp() {
         <div className="mx-auto max-w-3xl">
           <div className="text-center">
             <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">
-              FAQ
+              {t.faqIntro.label}
             </p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              Common questions
+              {t.faqIntro.title}
             </h2>
           </div>
           <div className="mt-8 space-y-2">
-            {faqs.map((item, index) => {
+            {t.faqs.map((item, index) => {
               const isOpen = openFaq === index;
               return (
                 <article
-                  className="overflow-hidden rounded-xl border border-slate-200 bg-white"
+                  className="overflow-hidden rounded-lg border border-slate-200 bg-white"
                   key={item.question}
                 >
                   <button
@@ -888,13 +834,13 @@ export function MailApp() {
       <section className="border-t border-slate-200 bg-slate-50 px-4 py-16 sm:px-6" id="about">
         <div className="mx-auto max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">
-            About Instant Mail
+            {t.aboutIntro.label}
           </p>
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            Free temp mail for privacy and spam protection
+            {t.aboutIntro.title}
           </h2>
           <div className="mt-8 space-y-10">
-            {aboutInstantMailSections.map((section) => (
+            {t.aboutSections.map((section) => (
               <article key={section.title}>
                 <h3 className="text-xl font-bold text-slate-900">{section.title}</h3>
                 <div className="mt-4 space-y-4 text-sm leading-relaxed text-slate-600 sm:text-base">
@@ -902,7 +848,7 @@ export function MailApp() {
                     <p key={paragraph}>{paragraph}</p>
                   ))}
                   {section.bullets ? (
-                    <ul className="grid gap-2 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+                    <ul className="grid gap-2 rounded-lg border border-slate-200 bg-white p-4 sm:p-5">
                       {section.bullets.map((item) => (
                         <li className="flex gap-3" key={item}>
                           <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-600" />
@@ -926,24 +872,33 @@ export function MailApp() {
             <span className="font-bold text-slate-900">Instant Mail</span>
           </div>
           <nav className="flex flex-wrap gap-6 text-sm font-medium text-slate-600">
-            <a className="transition hover:text-brand-600" href="#inbox">
-              Inbox
+            <a className="transition hover:text-brand-600" href={`${basePath}/#inbox`}>
+              {t.nav.inbox}
             </a>
-            <a className="transition hover:text-brand-600" href="#features">
-              Features
+            <a className="transition hover:text-brand-600" href={`${basePath}/#features`}>
+              {t.nav.features}
             </a>
-            <a className="transition hover:text-brand-600" href="#faq">
-              FAQ
+            <a className="transition hover:text-brand-600" href={`${basePath}/#faq`}>
+              {t.nav.faq}
             </a>
-            <a className="transition hover:text-brand-600" href="#about">
-              About
+            <a className="transition hover:text-brand-600" href={`${basePath}/#about`}>
+              {t.nav.about}
+            </a>
+            <a className="transition hover:text-brand-600" href={`${basePath}/privacy`}>
+              {t.footer.privacy}
+            </a>
+            <a className="transition hover:text-brand-600" href={`${basePath}/terms`}>
+              {t.footer.terms}
+            </a>
+            <a className="transition hover:text-brand-600" href={`${basePath}/contact`}>
+              {t.footer.contact}
             </a>
           </nav>
         </div>
         <div className="mx-auto mt-6 flex max-w-6xl flex-col gap-2 border-t border-slate-100 pt-6 text-sm text-slate-500 sm:flex-row sm:justify-between">
-          <p>© 2026 Instant Mail. Disposable email for quick, private use.</p>
+          <p>{t.footer.copyright}</p>
           <p>
-            Powered by the public{" "}
+            {t.footer.poweredPrefix}{" "}
             <a
               className="font-semibold text-brand-600 hover:text-brand-700"
               href="https://mail.tm/"
@@ -952,7 +907,7 @@ export function MailApp() {
             >
               Mail.tm
             </a>{" "}
-            API.
+            {t.footer.poweredSuffix}
           </p>
         </div>
       </footer>
@@ -961,7 +916,7 @@ export function MailApp() {
         <div
           aria-labelledby="message-modal-title"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-3 backdrop-blur-sm sm:p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-3 sm:p-6"
           onKeyDown={(event) => {
             if (
               event.key === "Escape" ||
@@ -977,75 +932,83 @@ export function MailApp() {
           tabIndex={-1}
         >
           <article
-            className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-hero"
+            className="flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white text-slate-900 shadow-lg"
             onMouseDown={(event) => event.stopPropagation()}
           >
             <header className="grid gap-4 border-b border-slate-100 p-5 sm:grid-cols-[1fr_auto] sm:p-6">
               <div className="min-w-0">
-                <p className="truncate text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  {activeMessageSummary.from.name || activeMessageSummary.from.address}
-                </p>
+                <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
+                  <p className="truncate text-sm font-semibold text-slate-700">
+                    {activeSenderName}
+                  </p>
+                  {activeSenderEmail && activeSenderEmail !== activeSenderName ? (
+                    <p className="truncate text-xs text-slate-500">
+                      {activeSenderEmail}
+                    </p>
+                  ) : null}
+                </div>
                 <h2
                   className="mt-2 text-xl font-bold leading-tight sm:text-2xl"
                   id="message-modal-title"
                 >
-                  {activeMessageSummary.subject || "No subject"}
+                  {activeMessageSummary.subject || t.inbox.noSubject}
                 </h2>
                 <p className="mt-2 text-sm text-slate-500">
-                  Received {formatMessageDate(activeMessageSummary.createdAt)}
+                  {t.modal.received}{" "}
+                  {formatMessageDate(activeMessageSummary.createdAt, t.locale)}
                 </p>
               </div>
               <button
                 aria-label="Close message"
-                className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:self-auto"
+                className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:self-auto"
                 onClick={closeMessage}
                 type="button"
               >
                 <X size={16} />
-                Close
+                {t.modal.close}
               </button>
             </header>
 
             <div className="min-h-0 flex-1 overflow-auto p-4 sm:p-6">
               {messageModalState === "loading" ? (
-                <div className="flex min-h-[320px] flex-col items-center justify-center rounded-xl bg-slate-50 p-8 text-center">
+                <div className="flex min-h-[320px] flex-col items-center justify-center rounded-lg bg-slate-50 p-8 text-center">
                   <Loader2
                     aria-hidden="true"
                     className="mb-4 animate-spin text-brand-600"
                     size={36}
                   />
-                  <p className="text-lg font-bold text-slate-900">Opening message</p>
+                  <p className="text-lg font-bold text-slate-900">{t.modal.opening}</p>
                   <p className="mt-2 max-w-sm text-sm text-slate-500">
-                    Fetching the full email content now.
+                    {t.modal.fetching}
                   </p>
                 </div>
               ) : null}
 
               {messageModalState === "error" ? (
-                <div className="flex min-h-[320px] flex-col items-center justify-center rounded-xl bg-slate-50 p-8 text-center">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+                <div className="flex min-h-[320px] flex-col items-center justify-center rounded-lg bg-slate-50 p-8 text-center">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
                     <Mail aria-hidden="true" size={24} />
                   </div>
-                  <p className="text-lg font-bold text-slate-900">Could not open this email</p>
+                  <p className="text-lg font-bold text-slate-900">{t.modal.errorTitle}</p>
                   <p className="mt-2 max-w-md text-sm text-slate-500">
                     {messageModalError ||
-                      "The provider did not return the full message content."}
+                      t.modal.errorFallback}
                   </p>
                   <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                     <button
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700"
+                      className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700"
                       onClick={retryMessage}
                       type="button"
                     >
                       <RefreshCw size={16} />
-                      Try again
+                      {t.modal.tryAgain}
                     </button>
                     <button
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                      className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                       onClick={closeMessage}
                       type="button"
                     >
-                      Close
+                      {t.modal.close}
                     </button>
                   </div>
                 </div>
@@ -1054,22 +1017,25 @@ export function MailApp() {
               {messageModalState === "ready" && activeMessageDetail ? (
                 <>
                   <div
-                    className="email-content min-h-[280px] overflow-auto rounded-xl border border-slate-200 bg-white p-5 sm:p-6"
+                    className="email-content min-h-[280px] overflow-auto rounded-lg border border-slate-200 bg-white p-5 sm:p-6"
                     dangerouslySetInnerHTML={{
                       __html: activeMessagePayload,
                     }}
                   />
 
                   {activeMessageAttachments.length > 0 ? (
-                    <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
+                    <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm">
                       <p className="font-semibold text-slate-900">
                         {activeMessageAttachments.length} attachment
-                        {activeMessageAttachments.length === 1 ? "" : "s"}
+                        {" "}
+                        {activeMessageAttachments.length === 1
+                          ? t.modal.attachment
+                          : t.modal.attachments}
                       </p>
                       <ul className="mt-3 space-y-2">
                         {activeMessageAttachments.map((attachment) => (
                           <li
-                            className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between"
+                            className="flex flex-col gap-3 rounded-md border border-slate-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between"
                             key={attachment.id}
                           >
                             <div>
@@ -1087,20 +1053,20 @@ export function MailApp() {
                               ) : null}
                             </div>
                             <button
-                              className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-brand-600 px-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-60"
+                              className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-brand-600 px-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-60"
                               disabled={
                                 !attachment.downloadUrl ||
-                                attachmentStatus[attachment.id] === "Downloading..."
+                                attachmentStatus[attachment.id] === t.errors.downloading
                               }
                               onClick={() => void handleAttachmentDownload(attachment)}
                               type="button"
                             >
-                              {attachmentStatus[attachment.id] === "Downloading..." ? (
+                              {attachmentStatus[attachment.id] === t.errors.downloading ? (
                                 <Loader2 className="animate-spin" size={15} />
                               ) : (
                                 <Download size={15} />
                               )}
-                              Download
+                              {t.modal.download}
                             </button>
                           </li>
                         ))}

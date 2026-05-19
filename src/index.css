@@ -27,7 +27,7 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 40%, #f1f5f9 100%);
+  background: #f8fafc;
 }
 
 button,
@@ -37,6 +37,10 @@ input {
 
 a {
   color: inherit;
+}
+
+.language-menu summary::-webkit-details-marker {
+  display: none;
 }
 
 ::selection {
@@ -60,7 +64,7 @@ a {
 .email-content :where(img, video, canvas, svg) {
   max-width: 100%;
   height: auto;
-  border-radius: 12px;
+  border-radius: 8px;
   display: block;
   margin-block: 1rem;
 }
@@ -96,7 +100,7 @@ a {
 }
 
 .email-content :where(.email-empty-state) {
-  border-radius: 12px;
+  border-radius: 8px;
   background: #f1f5f9;
   padding: 24px;
 }
