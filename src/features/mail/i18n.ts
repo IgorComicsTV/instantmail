@@ -1,5 +1,8 @@
 import type { LucideIcon } from "lucide-react";
-import { Mail, Shield, UserRound, Zap } from "lucide-react";
+import Mail from "lucide-react/dist/esm/icons/mail.js";
+import Shield from "lucide-react/dist/esm/icons/shield.js";
+import UserRound from "lucide-react/dist/esm/icons/user-round.js";
+import Zap from "lucide-react/dist/esm/icons/zap.js";
 
 export type LanguageCode = "en" | "pt" | "es" | "fr" | "de" | "id" | "hi";
 export type TrustPageKey = "privacy" | "terms" | "contact" | "about" | "faq";
@@ -106,6 +109,16 @@ export type LanguageContent = {
     attachment: string;
     attachments: string;
     download: string;
+  };
+  linkWarning: {
+    title: string;
+    message: string;
+    destination: string;
+    warning: string;
+    responsibility: string;
+    invalidLink: string;
+    cancel: string;
+    continueAnyway: string;
   };
   errors: {
     refresh: string;
@@ -258,6 +271,18 @@ const content: Record<LanguageCode, LanguageContent> = {
       attachment: "attachment",
       attachments: "attachments",
       download: "Download",
+    },
+    linkWarning: {
+      title: "Be careful with links in emails",
+      message: "This link will open an external website:",
+      destination: "Destination:",
+      warning:
+        "Temporary inboxes can receive messages from unknown senders. Avoid opening suspicious links, downloading files, or entering personal information.",
+      responsibility:
+        "Instant Mail does not control external websites and is not responsible for content accessed outside the platform.",
+      invalidLink: "This link cannot be opened because it is invalid or uses an unsafe protocol.",
+      cancel: "Cancel",
+      continueAnyway: "Continue anyway",
     },
     errors: {
       refresh: "Could not refresh the inbox.",
@@ -487,6 +512,18 @@ const content: Record<LanguageCode, LanguageContent> = {
       attachment: "anexo",
       attachments: "anexos",
       download: "Baixar",
+    },
+    linkWarning: {
+      title: "Tenha cuidado com links em emails",
+      message: "Este link abrirá um site externo:",
+      destination: "Destino:",
+      warning:
+        "Caixas temporárias podem receber mensagens de remetentes desconhecidos. Evite abrir links suspeitos, baixar arquivos ou inserir informações pessoais.",
+      responsibility:
+        "O Instant Mail não controla sites externos e não se responsabiliza por conteúdos acessados fora da plataforma.",
+      invalidLink: "Este link não pode ser aberto porque é inválido ou usa um protocolo inseguro.",
+      cancel: "Cancelar",
+      continueAnyway: "Continuar mesmo assim",
     },
     errors: {
       refresh: "Não foi possível atualizar a caixa de entrada.",
@@ -758,6 +795,18 @@ const content: Record<LanguageCode, LanguageContent> = {
       attachments: "adjuntos",
       download: "Descargar",
     },
+    linkWarning: {
+      title: "Ten cuidado con los enlaces en los correos",
+      message: "Este enlace abrirá un sitio web externo:",
+      destination: "Destino:",
+      warning:
+        "Las bandejas temporales pueden recibir mensajes de remitentes desconocidos. Evita abrir enlaces sospechosos, descargar archivos o introducir información personal.",
+      responsibility:
+        "Instant Mail no controla sitios web externos y no se hace responsable del contenido accedido fuera de la plataforma.",
+      invalidLink: "Este enlace no se puede abrir porque es inválido o usa un protocolo inseguro.",
+      cancel: "Cancelar",
+      continueAnyway: "Continuar de todos modos",
+    },
     errors: {
       refresh: "No se pudo actualizar la bandeja.",
       noDomains: "No hay dominios disponibles ahora.",
@@ -934,6 +983,18 @@ content.fr = {
     attachments: "pièces jointes",
     download: "Télécharger",
   },
+  linkWarning: {
+    title: "Soyez prudent avec les liens dans les emails",
+    message: "Ce lien ouvrira un site web externe :",
+    destination: "Destination :",
+    warning:
+      "Les boîtes temporaires peuvent recevoir des messages d'expéditeurs inconnus. Évitez d'ouvrir des liens suspects, de télécharger des fichiers ou de saisir des informations personnelles.",
+    responsibility:
+      "Instant Mail ne contrôle pas les sites externes et n'est pas responsable du contenu consulté en dehors de la plateforme.",
+    invalidLink: "Ce lien ne peut pas être ouvert car il est invalide ou utilise un protocole non sécurisé.",
+    cancel: "Annuler",
+    continueAnyway: "Continuer quand même",
+  },
   errors: {
     refresh: "Impossible d'actualiser la boîte de réception.",
     noDomains: "Aucun domaine n'est disponible pour le moment.",
@@ -1051,6 +1112,18 @@ content.de = {
     attachments: "Anhänge",
     download: "Herunterladen",
   },
+  linkWarning: {
+    title: "Seien Sie vorsichtig mit Links in E-Mails",
+    message: "Dieser Link öffnet eine externe Website:",
+    destination: "Ziel:",
+    warning:
+      "Temporäre Postfächer können Nachrichten von unbekannten Absendern erhalten. Öffnen Sie keine verdächtigen Links, laden Sie keine verdächtigen Dateien herunter und geben Sie keine persönlichen Daten ein.",
+    responsibility:
+      "Instant Mail kontrolliert keine externen Websites und ist nicht für Inhalte verantwortlich, die außerhalb der Plattform aufgerufen werden.",
+    invalidLink: "Dieser Link kann nicht geöffnet werden, weil er ungültig ist oder ein unsicheres Protokoll verwendet.",
+    cancel: "Abbrechen",
+    continueAnyway: "Trotzdem fortfahren",
+  },
   errors: {
     refresh: "Das Postfach konnte nicht aktualisiert werden.",
     noDomains: "Derzeit sind keine Domains verfügbar.",
@@ -1164,6 +1237,18 @@ content.id = {
     attachments: "lampiran",
     download: "Unduh",
   },
+  linkWarning: {
+    title: "Berhati-hatilah dengan tautan di email",
+    message: "Tautan ini akan membuka situs web eksternal:",
+    destination: "Tujuan:",
+    warning:
+      "Inbox sementara dapat menerima pesan dari pengirim yang tidak dikenal. Hindari membuka tautan mencurigakan, mengunduh file, atau memasukkan informasi pribadi.",
+    responsibility:
+      "Instant Mail tidak mengontrol situs web eksternal dan tidak bertanggung jawab atas konten yang diakses di luar platform.",
+    invalidLink: "Tautan ini tidak dapat dibuka karena tidak valid atau menggunakan protokol yang tidak aman.",
+    cancel: "Batal",
+    continueAnyway: "Tetap lanjutkan",
+  },
   errors: {
     refresh: "Inbox tidak dapat dimuat ulang.",
     noDomains: "Tidak ada domain yang tersedia saat ini.",
@@ -1276,6 +1361,18 @@ content.hi = {
     attachment: "attachment",
     attachments: "attachments",
     download: "Download",
+  },
+  linkWarning: {
+    title: "Emails में links खोलते समय सावधान रहें",
+    message: "यह link एक external website खोलेगा:",
+    destination: "Destination:",
+    warning:
+      "Temporary inboxes unknown senders से messages receive कर सकते हैं. Suspicious links खोलने, files download करने या personal information डालने से बचें.",
+    responsibility:
+      "Instant Mail external websites को control नहीं करता और platform के बाहर access किए गए content के लिए responsible नहीं है.",
+    invalidLink: "यह link open नहीं किया जा सकता क्योंकि यह invalid है या unsafe protocol इस्तेमाल करता है.",
+    cancel: "Cancel",
+    continueAnyway: "Continue anyway",
   },
   errors: {
     refresh: "Inbox refresh नहीं हो सका.",

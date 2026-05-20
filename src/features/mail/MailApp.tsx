@@ -1,17 +1,22 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  Check,
-  ChevronDown,
-  Copy,
-  Download,
-  Eye,
-  Inbox,
-  Loader2,
-  Mail,
-  RefreshCw,
-  Trash2,
-  X,
-} from "lucide-react";
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+} from "react";
+import Check from "lucide-react/dist/esm/icons/check.js";
+import ChevronDown from "lucide-react/dist/esm/icons/chevron-down.js";
+import Copy from "lucide-react/dist/esm/icons/copy.js";
+import Download from "lucide-react/dist/esm/icons/download.js";
+import Eye from "lucide-react/dist/esm/icons/eye.js";
+import Inbox from "lucide-react/dist/esm/icons/inbox.js";
+import Loader2 from "lucide-react/dist/esm/icons/loader-2.js";
+import Mail from "lucide-react/dist/esm/icons/mail.js";
+import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
+import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
+import X from "lucide-react/dist/esm/icons/x.js";
 import {
   createAccount,
   createToken,
@@ -41,6 +46,11 @@ type MessageModalState = "closed" | "loading" | "ready" | "error";
 type MailAppProps = {
   content: LanguageContent;
   basePath: string;
+};
+type PendingEmailLink = {
+  displayUrl: string;
+  href: string;
+  isSafe: boolean;
 };
 
 const POLL_INTERVAL_MS = 8000;
@@ -214,6 +224,35 @@ function getAttachments(message?: MailMessage | null) {
   return Array.isArray(message?.attachments) ? message.attachments : [];
 }
 
+function parseEmailLink(rawHref: string): PendingEmailLink {
+  const trimmedHref = rawHref.trim();
+
+  if (!trimmedHref || !/^https?:\/\//i.test(trimmedHref)) {
+    return {
+      displayUrl: trimmedHref || "Invalid link",
+      href: trimmedHref,
+      isSafe: false,
+    };
+  }
+
+  try {
+    const url = new URL(trimmedHref);
+    const isSafe = url.protocol === "http:" || url.protocol === "https:";
+
+    return {
+      displayUrl: url.hostname || url.href,
+      href: url.href,
+      isSafe,
+    };
+  } catch {
+    return {
+      displayUrl: trimmedHref,
+      href: trimmedHref,
+      isSafe: false,
+    };
+  }
+}
+
 export function MailApp({ content: t, basePath }: MailAppProps) {
   const [session, setSession] = useState<MailSession | null>(() => loadSession());
   const [messages, setMessages] = useState<MailMessageSummary[]>([]);
@@ -225,6 +264,9 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
   const [messageModalState, setMessageModalState] =
     useState<MessageModalState>("closed");
   const [messageModalError, setMessageModalError] = useState<string | null>(null);
+  const [pendingEmailLink, setPendingEmailLink] = useState<PendingEmailLink | null>(
+    null,
+  );
   const [attachmentStatus, setAttachmentStatus] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -295,6 +337,7 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
     setActiveMessageDetail(null);
     setMessageModalState("closed");
     setMessageModalError(null);
+    setPendingEmailLink(null);
     setAttachmentStatus({});
 
     try {
@@ -399,6 +442,7 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
     setActiveMessageDetail(null);
     setMessageModalState("closed");
     setMessageModalError(null);
+    setPendingEmailLink(null);
     setAttachmentStatus({});
     void createMailbox();
   };
@@ -408,7 +452,12 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
     setActiveMessageDetail(null);
     setMessageModalState("closed");
     setMessageModalError(null);
+    setPendingEmailLink(null);
     setAttachmentStatus({});
+  }, []);
+
+  const closeLinkWarning = useCallback(() => {
+    setPendingEmailLink(null);
   }, []);
 
   const retryMessage = () => {
@@ -457,6 +506,37 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
     }
   };
 
+  const handleEmailContentClick = (event: MouseEvent<HTMLDivElement>) => {
+    const target = event.target;
+
+    if (!(target instanceof Element)) {
+      return;
+    }
+
+    const link = target.closest<HTMLAnchorElement>("a[href]");
+    if (!link) {
+      return;
+    }
+
+    const rawHref = link.getAttribute("href");
+    if (rawHref === null) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    setPendingEmailLink(parseEmailLink(rawHref));
+  };
+
+  const continueToPendingLink = () => {
+    if (!pendingEmailLink?.isSafe) {
+      return;
+    }
+
+    window.open(pendingEmailLink.href, "_blank", "noopener,noreferrer");
+    setPendingEmailLink(null);
+  };
+
   const activeMessagePayload = useMemo(() => {
     if (messageModalState !== "ready" || !activeMessageDetail) {
       return "";
@@ -499,6 +579,11 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" || event.key === "Esc" || event.code === "Escape") {
+        if (pendingEmailLink) {
+          closeLinkWarning();
+          return;
+        }
+
         closeMessage();
       }
     };
@@ -513,7 +598,7 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
       document.removeEventListener("keydown", handleKeyDown, { capture: true });
       window.removeEventListener("keydown", handleKeyDown, { capture: true });
     };
-  }, [closeMessage, messageModalState]);
+  }, [closeLinkWarning, closeMessage, messageModalState, pendingEmailLink]);
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
@@ -1018,6 +1103,7 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
                 <>
                   <div
                     className="email-content min-h-[280px] overflow-auto rounded-lg border border-slate-200 bg-white p-5 sm:p-6"
+                    onClickCapture={handleEmailContentClick}
                     dangerouslySetInnerHTML={{
                       __html: activeMessagePayload,
                     }}
@@ -1077,6 +1163,70 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
               ) : null}
             </div>
           </article>
+
+          {pendingEmailLink ? (
+            <div
+              aria-labelledby="email-link-warning-title"
+              aria-modal="true"
+              className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/45 p-4"
+              onMouseDown={(event) => {
+                event.stopPropagation();
+                closeLinkWarning();
+              }}
+              role="dialog"
+            >
+              <article
+                className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-5 text-slate-900 shadow-lg sm:p-6"
+                onMouseDown={(event) => event.stopPropagation()}
+              >
+                <h3
+                  className="text-lg font-bold leading-tight text-slate-950"
+                  id="email-link-warning-title"
+                >
+                  {t.linkWarning.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                  {t.linkWarning.message}
+                </p>
+                <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <p className="text-xs font-semibold text-slate-500">
+                    {t.linkWarning.destination}
+                  </p>
+                  <p className="mt-1 break-all text-sm font-semibold text-slate-900">
+                    {pendingEmailLink.displayUrl}
+                  </p>
+                </div>
+                {!pendingEmailLink.isSafe ? (
+                  <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-800">
+                    {t.linkWarning.invalidLink}
+                  </p>
+                ) : null}
+                <p className="mt-4 text-sm leading-relaxed text-slate-600">
+                  {t.linkWarning.warning}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                  {t.linkWarning.responsibility}
+                </p>
+                <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                  <button
+                    className="inline-flex h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                    onClick={closeLinkWarning}
+                    type="button"
+                  >
+                    {t.linkWarning.cancel}
+                  </button>
+                  <button
+                    className="inline-flex h-10 items-center justify-center rounded-md bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={!pendingEmailLink.isSafe}
+                    onClick={continueToPendingLink}
+                    type="button"
+                  >
+                    {t.linkWarning.continueAnyway}
+                  </button>
+                </div>
+              </article>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </main>
