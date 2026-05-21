@@ -3,15 +3,19 @@ import type { MailMessageSummary } from "../../lib/mailtm";
 const STORAGE_KEY = "anymail.session.v1";
 
 export type MailSession = {
+  accountId?: string;
   address: string;
   password: string;
   token: string;
+  createdAt?: string;
+  expiresAt?: string;
   readMessageIds: string[];
   lastUpdatedAt?: string;
+  lastManualRefreshAt?: string;
 };
 
-export function loadSession(): MailSession | null {
-  const raw = localStorage.getItem(STORAGE_KEY);
+export function loadSession(storageKey = STORAGE_KEY): MailSession | null {
+  const raw = localStorage.getItem(storageKey);
   if (!raw) {
     return null;
   }
@@ -33,12 +37,12 @@ export function loadSession(): MailSession | null {
   }
 }
 
-export function saveSession(session: MailSession): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+export function saveSession(session: MailSession, storageKey = STORAGE_KEY): void {
+  localStorage.setItem(storageKey, JSON.stringify(session));
 }
 
-export function clearSession(): void {
-  localStorage.removeItem(STORAGE_KEY);
+export function clearSession(storageKey = STORAGE_KEY): void {
+  localStorage.removeItem(storageKey);
 }
 
 export function mergeReadState(

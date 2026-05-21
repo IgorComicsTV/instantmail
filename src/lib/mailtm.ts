@@ -119,6 +119,19 @@ export async function createToken(
   });
 }
 
+export async function deleteAccount(token: string, accountId: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/accounts/${accountId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok && response.status !== 404) {
+    throw new Error(`Could not delete temporary email account. Status ${response.status}.`);
+  }
+}
+
 export async function getMessages(token: string): Promise<MailMessageSummary[]> {
   const payload = await request<CollectionResponse<MailMessageSummary>>("/messages", {
     headers: {

@@ -8,6 +8,8 @@ import {
   isTrustPageKey,
   languageOrder,
   languages,
+  tenMinuteContent,
+  tenMinuteSlug,
   type LanguageCode,
   type LanguageContent,
   type TrustPageKey,
@@ -15,13 +17,18 @@ import {
 
 type RouteState = {
   language: LanguageCode;
-  page: TrustPageKey | null;
+  page: TrustPageKey | "tenMinute" | null;
 };
 
 function readRoute(): RouteState {
   const [first, second] = window.location.pathname.split("/").filter(Boolean);
   const language = isLanguageCode(first) ? first : "en";
-  const page = isTrustPageKey(second) ? second : null;
+  const page =
+    second === tenMinuteSlug
+      ? "tenMinute"
+      : isTrustPageKey(second)
+        ? second
+        : null;
 
   return { language, page };
 }
@@ -70,12 +77,17 @@ function setLink(rel: string, href: string, hreflang?: string) {
   element.href = href;
 }
 
-function useSeo(content: LanguageContent, page: TrustPageKey | null) {
+function useSeo(content: LanguageContent, page: RouteState["page"]) {
   useEffect(() => {
-    const trustPage = page ? content.trustPages[page] : null;
-    const title = trustPage ? `${trustPage.title} | Instant Mail` : content.title;
-    const description = trustPage?.description ?? content.description;
-    const path = page ? `/${content.code}/${page}` : `/${content.code}/`;
+    const trustPage = page && page !== "tenMinute" ? content.trustPages[page] : null;
+    const tenMinutePage = page === "tenMinute" ? tenMinuteContent[content.code] : null;
+    const title = tenMinutePage?.title ?? (trustPage ? `${trustPage.title} | Instant Mail` : content.title);
+    const description = tenMinutePage?.description ?? trustPage?.description ?? content.description;
+    const path = page === "tenMinute"
+      ? `/${content.code}/${tenMinuteSlug}`
+      : page
+        ? `/${content.code}/${page}`
+        : `/${content.code}/`;
     const canonical = `${window.location.origin}${path}`;
 
     document.documentElement.lang = content.code;
@@ -89,10 +101,20 @@ function useSeo(content: LanguageContent, page: TrustPageKey | null) {
     setLink("canonical", canonical);
 
     languageOrder.forEach((code) => {
-      const alternatePath = page ? `/${code}/${page}` : `/${code}/`;
+      const alternatePath = page === "tenMinute"
+        ? `/${code}/${tenMinuteSlug}`
+        : page
+          ? `/${code}/${page}`
+          : `/${code}/`;
       setLink("alternate", `${window.location.origin}${alternatePath}`, code);
     });
-    setLink("alternate", `${window.location.origin}/en/`, "x-default");
+    setLink(
+      "alternate",
+      page === "tenMinute"
+        ? `${window.location.origin}/en/${tenMinuteSlug}`
+        : `${window.location.origin}/en/`,
+      "x-default",
+    );
   }, [content, page]);
 }
 
@@ -198,12 +220,34 @@ function TrustPage({
 export function App() {
   const route = readRoute();
   const content = languages[route.language];
+  const tenMinutePage = tenMinuteContent[route.language];
+  const tenMinuteMailContent: LanguageContent = {
+    ...content,
+    title: tenMinutePage.title,
+    description: tenMinutePage.description,
+    hero: tenMinutePage.hero,
+    inbox: tenMinutePage.inbox,
+    featuresIntro: tenMinutePage.featuresIntro,
+    faqIntro: tenMinutePage.faqIntro,
+    aboutIntro: tenMinutePage.aboutIntro,
+    features: tenMinutePage.features,
+    faqs: tenMinutePage.faqs,
+    aboutSections: tenMinutePage.aboutSections,
+  };
 
   useSeo(content, route.page);
 
   return (
     <>
-      {route.page ? (
+      {route.page === "tenMinute" ? (
+        <MailApp
+          content={tenMinuteMailContent}
+          basePath={`/${content.code}`}
+          languageHrefFor={(code) => `/${code}/${tenMinuteSlug}`}
+          storageKey="instantmail.10-minute-session.v1"
+          tenMinute={tenMinutePage}
+        />
+      ) : route.page ? (
         <TrustPage content={content} page={route.page} />
       ) : (
         <MailApp content={content} basePath={`/${content.code}`} />

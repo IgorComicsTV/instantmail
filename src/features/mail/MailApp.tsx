@@ -20,6 +20,7 @@ import X from "lucide-react/dist/esm/icons/x.js";
 import {
   createAccount,
   createToken,
+  deleteAccount,
   downloadAttachment,
   getDomains,
   getMessage,
@@ -32,7 +33,7 @@ import {
 } from "../../lib/mailtm";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
 import { SiteLogo } from "../../components/ui/SiteLogo";
-import { type LanguageContent } from "./i18n";
+import { type LanguageCode, type LanguageContent, type TenMinuteContent } from "./i18n";
 import {
   clearSession,
   loadSession,
@@ -46,6 +47,9 @@ type MessageModalState = "closed" | "loading" | "ready" | "error";
 type MailAppProps = {
   content: LanguageContent;
   basePath: string;
+  languageHrefFor?: (code: LanguageCode) => string;
+  storageKey?: string;
+  tenMinute?: TenMinuteContent;
 };
 type PendingEmailLink = {
   displayUrl: string;
@@ -55,6 +59,8 @@ type PendingEmailLink = {
 
 const POLL_INTERVAL_MS = 8000;
 const INITIAL_REFRESH_DELAY_MS = 1400;
+const TEN_MINUTES_MS = 10 * 60 * 1000;
+const MANUAL_REFRESH_COOLDOWN_MS = 5000;
 
 function formatDate(value: string | undefined, locale: string, fallback: string) {
   if (!value) {
@@ -224,6 +230,15 @@ function getAttachments(message?: MailMessage | null) {
   return Array.isArray(message?.attachments) ? message.attachments : [];
 }
 
+function formatCountdown(value: number) {
+  const safeValue = Math.max(0, value);
+  const totalSeconds = Math.ceil(safeValue / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
 function parseEmailLink(rawHref: string): PendingEmailLink {
   const trimmedHref = rawHref.trim();
 
@@ -253,8 +268,16 @@ function parseEmailLink(rawHref: string): PendingEmailLink {
   }
 }
 
-export function MailApp({ content: t, basePath }: MailAppProps) {
-  const [session, setSession] = useState<MailSession | null>(() => loadSession());
+export function MailApp({
+  content: t,
+  basePath,
+  languageHrefFor,
+  storageKey,
+  tenMinute,
+}: MailAppProps) {
+  const [session, setSession] = useState<MailSession | null>(() =>
+    loadSession(storageKey),
+  );
   const [messages, setMessages] = useState<MailMessageSummary[]>([]);
   const [activeMessageSummary, setActiveMessageSummary] =
     useState<MailMessageSummary | null>(null);
@@ -272,11 +295,23 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [now, setNow] = useState(() => Date.now());
+  const [refreshCooldownUntil, setRefreshCooldownUntil] = useState(() => {
+    const lastManualRefreshAt = loadSession(storageKey)?.lastManualRefreshAt;
+    return lastManualRefreshAt
+      ? Date.parse(lastManualRefreshAt) + MANUAL_REFRESH_COOLDOWN_MS
+      : 0;
+  });
   const createInFlight = useRef(false);
   const refreshInFlight = useRef(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   const isBusy = status !== "idle";
+  const hasTenMinuteMode = Boolean(tenMinute);
+  const expiresAtTime = session?.expiresAt ? Date.parse(session.expiresAt) : 0;
+  const remainingMs = expiresAtTime ? Math.max(0, expiresAtTime - now) : 0;
+  const isRefreshCoolingDown = hasTenMinuteMode && refreshCooldownUntil > now;
+  const isRefreshDisabled = !session || isBusy || isRefreshCoolingDown;
   const unreadCount = useMemo(
     () => messages.filter((message) => !message.seen).length,
     [messages],
@@ -284,8 +319,8 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
 
   const persistSession = useCallback((nextSession: MailSession) => {
     setSession(nextSession);
-    saveSession(nextSession);
-  }, []);
+    saveSession(nextSession, storageKey);
+  }, [storageKey]);
 
   const refreshMessages = useCallback(
     async (activeSession = session, quiet = false) => {
@@ -325,7 +360,28 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
     [persistSession, session, t.errors.refresh],
   );
 
-  const createMailbox = useCallback(async () => {
+  const handleManualRefresh = () => {
+    if (!session || isBusy || isRefreshCoolingDown) {
+      return;
+    }
+
+    if (!hasTenMinuteMode) {
+      void refreshMessages();
+      return;
+    }
+
+    const lastManualRefreshAt = new Date().toISOString();
+    const nextSession = {
+      ...session,
+      lastManualRefreshAt,
+    };
+
+    setRefreshCooldownUntil(Date.parse(lastManualRefreshAt) + MANUAL_REFRESH_COOLDOWN_MS);
+    persistSession(nextSession);
+    void refreshMessages(nextSession);
+  };
+
+  const createMailbox = useCallback(async (previousSession?: MailSession | null) => {
     if (createInFlight.current) {
       return;
     }
@@ -341,6 +397,14 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
     setAttachmentStatus({});
 
     try {
+      if (previousSession?.accountId) {
+        try {
+          await deleteAccount(previousSession.token, previousSession.accountId);
+        } catch {
+          // Best-effort cleanup only; a failed provider delete should not block a new inbox.
+        }
+      }
+
       const domains = await getDomains();
       const domain = domains[0]?.domain;
 
@@ -350,12 +414,18 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
 
       const password = makePassword();
       const address = makeAddress(domain);
-      await createAccount(address, password);
+      const account = await createAccount(address, password);
       const token = await createToken(address, password);
+      const createdAt = new Date();
       const nextSession: MailSession = {
+        accountId: account.id,
         address,
         password,
         token: token.token,
+        createdAt: createdAt.toISOString(),
+        expiresAt: hasTenMinuteMode
+          ? new Date(createdAt.getTime() + TEN_MINUTES_MS).toISOString()
+          : undefined,
         readMessageIds: [],
         lastUpdatedAt: new Date().toISOString(),
       };
@@ -372,7 +442,7 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
       createInFlight.current = false;
       setStatus("idle");
     }
-  }, [persistSession, t.errors.create, t.errors.noDomains]);
+  }, [hasTenMinuteMode, persistSession, t.errors.create, t.errors.noDomains]);
 
   const copyAddress = async () => {
     if (!session?.address) {
@@ -435,7 +505,8 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
   };
 
   const resetMailbox = () => {
-    clearSession();
+    const previousSession = session;
+    clearSession(storageKey);
     setSession(null);
     setMessages([]);
     setActiveMessageSummary(null);
@@ -444,7 +515,7 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
     setMessageModalError(null);
     setPendingEmailLink(null);
     setAttachmentStatus({});
-    void createMailbox();
+    void createMailbox(previousSession);
   };
 
   const closeMessage = useCallback(() => {
@@ -558,6 +629,40 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
       return undefined;
     }
 
+    let expiryTimeout: number | undefined;
+
+    if (hasTenMinuteMode && session.expiresAt) {
+      const expiresAt = Date.parse(session.expiresAt);
+
+      if (Number.isFinite(expiresAt) && expiresAt <= Date.now()) {
+        clearSession(storageKey);
+        setSession(null);
+        setMessages([]);
+        setActiveMessageSummary(null);
+        setActiveMessageDetail(null);
+        setMessageModalState("closed");
+        setMessageModalError(null);
+        setPendingEmailLink(null);
+        setAttachmentStatus({});
+        void createMailbox(session);
+        return undefined;
+      }
+
+      expiryTimeout = window.setTimeout(() => {
+        setNow(Date.now());
+        clearSession(storageKey);
+        setSession(null);
+        setMessages([]);
+        setActiveMessageSummary(null);
+        setActiveMessageDetail(null);
+        setMessageModalState("closed");
+        setMessageModalError(null);
+        setPendingEmailLink(null);
+        setAttachmentStatus({});
+        void createMailbox(session);
+      }, Math.max(0, expiresAt - Date.now()));
+    }
+
     const firstRefresh = window.setTimeout(() => {
       void refreshMessages(session, true);
     }, INITIAL_REFRESH_DELAY_MS);
@@ -567,10 +672,23 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
     }, POLL_INTERVAL_MS);
 
     return () => {
+      if (expiryTimeout) {
+        window.clearTimeout(expiryTimeout);
+      }
       window.clearTimeout(firstRefresh);
       window.clearInterval(interval);
     };
-  }, [createMailbox, refreshMessages, session]);
+  }, [createMailbox, hasTenMinuteMode, refreshMessages, session, storageKey]);
+
+  useEffect(() => {
+    if (!hasTenMinuteMode) {
+      return undefined;
+    }
+
+    const interval = window.setInterval(() => setNow(Date.now()), 1000);
+
+    return () => window.clearInterval(interval);
+  }, [hasTenMinuteMode]);
 
   useEffect(() => {
     if (messageModalState === "closed") {
@@ -614,6 +732,9 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
             <a className="transition hover:text-brand-600" href={`${basePath}/#inbox`}>
               {t.nav.inbox}
             </a>
+            <a className="transition hover:text-brand-600" href={`${basePath}/10-minute-mail`}>
+              10 Minute Mail
+            </a>
             <a className="transition hover:text-brand-600" href={`${basePath}/#features`}>
               {t.nav.features}
             </a>
@@ -625,13 +746,10 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
             </a>
           </nav>
           <div className="flex items-center gap-2">
-            <a
-              className="inline-flex h-10 items-center justify-center rounded-md bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
-              href={`${basePath}/#inbox`}
-            >
-              {t.nav.openInbox}
-            </a>
-            <LanguageMenu current={t.code} hrefFor={(code) => `/${code}/`} />
+            <LanguageMenu
+              current={t.code}
+              hrefFor={languageHrefFor ?? ((code) => `/${code}/`)}
+            />
           </div>
         </div>
       </header>
@@ -679,8 +797,8 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
               <button
                 aria-label="Refresh inbox"
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-60"
-                disabled={!session || isBusy}
-                onClick={() => void refreshMessages()}
+                disabled={isRefreshDisabled}
+                onClick={handleManualRefresh}
                 title={t.hero.refresh}
                 type="button"
               >
@@ -713,13 +831,42 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
                 <Trash2 size={16} />
                 {t.hero.delete}
               </button>
+              <a
+                className="inline-flex h-10 items-center justify-center rounded-md bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+                href="#inbox"
+              >
+                {t.nav.openInbox}
+              </a>
             </div>
 
             <p className="mt-4 text-left text-xs text-slate-500">
               {status === "creating"
-                ? t.hero.creatingStatus
+                ? tenMinute?.timer.creatingNew ?? t.hero.creatingStatus
                 : t.hero.readyStatus}
             </p>
+
+            {tenMinute ? (
+              <div className="mt-4 flex flex-col gap-3 rounded-lg border border-brand-100 bg-brand-50 px-4 py-3 text-left sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-brand-700">
+                    {tenMinute.timer.label}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    {tenMinute.timer.responsibleUse}
+                  </p>
+                </div>
+                <p
+                  aria-live="polite"
+                  className="shrink-0 text-lg font-bold tabular-nums text-brand-700"
+                >
+                  {session?.expiresAt && remainingMs > 0
+                    ? `${tenMinute.timer.expiresIn} ${formatCountdown(remainingMs)}`
+                    : status === "creating"
+                      ? tenMinute.timer.creatingNew
+                      : tenMinute.timer.expired}
+                </p>
+              </div>
+            ) : null}
           </div>
 
           {error ? (
@@ -756,8 +903,8 @@ export function MailApp({ content: t, basePath }: MailAppProps) {
               </div>
               <button
                 className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-md bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-60 sm:self-auto"
-                disabled={!session || isBusy}
-                onClick={() => void refreshMessages()}
+                disabled={isRefreshDisabled}
+                onClick={handleManualRefresh}
                 type="button"
               >
                 {status === "refreshing" ? (

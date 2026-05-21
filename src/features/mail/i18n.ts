@@ -137,6 +137,29 @@ export type LanguageContent = {
   trustPages: Record<TrustPageKey, { title: string; description: string; sections: SeoSection[] }>;
 };
 
+export type TenMinuteContent = Pick<
+  LanguageContent,
+  | "title"
+  | "description"
+  | "hero"
+  | "inbox"
+  | "featuresIntro"
+  | "faqIntro"
+  | "aboutIntro"
+  | "features"
+  | "faqs"
+  | "aboutSections"
+> & {
+  timer: {
+    label: string;
+    expiresIn: string;
+    expired: string;
+    creatingNew: string;
+    responsibleUse: string;
+  };
+  adLabel: string;
+};
+
 const enAbout: SeoSection[] = [
   {
     title: "What Is Instant Mail?",
@@ -1452,6 +1475,271 @@ function buildTrustPages(
 
 export const languageOrder: LanguageCode[] = ["en", "pt", "es", "fr", "de", "id", "hi"];
 export const languages = content;
+export const tenMinuteSlug = "10-minute-mail";
+
+export const tenMinuteContent: Record<LanguageCode, TenMinuteContent> = {
+  en: {
+    title: "10 Minute Mail - Free Temporary Email Inbox | Instant Mail",
+    description:
+      "Create a free 10 minute mail address instantly. Receive verification codes, avoid spam, and protect your real inbox with Instant Mail.",
+    hero: {
+      note: "Expires automatically · No registration",
+      h1Start: "10 Minute Mail,",
+      h1Accent: " Ready Instantly",
+      body: "Generate a temporary email address that expires after 10 minutes. Use it for quick sign-ups, verification codes, and spam-free browsing.",
+      emailLabel: "Your 10 minute email",
+      emailAria: "Current 10 minute temporary email address",
+      creatingAddress: "Creating your 10 minute address...",
+      copyEmail: "Copy email",
+      copied: "Copied",
+      refresh: "Refresh",
+      change: "Change",
+      delete: "Delete",
+      creatingStatus: "Generating your 10 minute inbox...",
+      readyStatus: "Use this address now. It will be replaced automatically after 10 minutes.",
+    },
+    inbox: {
+      ...content.en.inbox,
+      title: "10 Minute Mail Inbox",
+      emptyTitle: "Waiting for incoming emails",
+      emptyBody:
+        "Use your 10 minute email address on a website or app. Verification codes and messages will appear here.",
+    },
+    featuresIntro: {
+      label: "10 minute inbox",
+      title: "Fast, temporary, and built for one-time messages",
+      body: "A short-lived inbox helps you receive quick emails without exposing your personal address.",
+    },
+    faqIntro: { label: "FAQ", title: "10 Minute Mail questions" },
+    aboutIntro: {
+      label: "Guide",
+      title: "What is 10 Minute Mail?",
+    },
+    features: [
+      { icon: Zap, title: "Ready instantly", description: "Open the page and get a temporary email address in seconds." },
+      { icon: Mail, title: "10 minute expiry", description: "The inbox is replaced after 10 minutes for short-term use." },
+      { icon: Shield, title: "Spam protection", description: "Keep quick sign-ups and verification codes away from your real inbox." },
+      { icon: UserRound, title: "No account needed", description: "No registration, password, or personal information is required." },
+    ],
+    faqs: [
+      { question: "What is 10 Minute Mail?", answer: "10 Minute Mail is a temporary email address that receives messages for a short period and expires after 10 minutes." },
+      { question: "Can I receive verification codes?", answer: "Yes. You can use the address for low-risk sign-ups, activation links, and verification codes." },
+      { question: "What happens after 10 minutes?", answer: "The current inbox expires, the local session is cleared, and Instant Mail creates a new temporary email address." },
+      { question: "Should I use it for important accounts?", answer: "No. Use your real email for banking, payments, private documents, work, and any account you may need to recover later." },
+    ],
+    aboutSections: [
+      { title: "What Is 10 Minute Mail?", paragraphs: ["10 Minute Mail is a disposable temporary email address designed for quick online tasks. It lets you receive messages without using your personal inbox.", "The address is useful for verification codes, activation links, app testing, downloads, and short-term sign-ups."] },
+      { title: "How Does a 10 Minute Email Work?", paragraphs: ["Instant Mail creates one temporary inbox for your browser session. The address can receive incoming messages for 10 minutes, then it is discarded and replaced.", "You do not need to register, create a password, or share personal information."] },
+      { title: "When Should You Use It?", paragraphs: ["Use a 10 minute email for low-risk websites, newsletters, forums, forms, free resources, and testing flows.", "Do not use temporary email for banking, payments, sensitive files, business accounts, or services you need to recover later."] },
+    ],
+    timer: {
+      label: "10 minute timer",
+      expiresIn: "Expires in",
+      expired: "Inbox expired",
+      creatingNew: "Inbox expired. Creating a new one...",
+      responsibleUse: "Use temporary email only for low-risk activity. Avoid sensitive accounts.",
+    },
+    adLabel: "Advertisement",
+  },
+  pt: {
+    title: "Email Temporário 10 Minutos Grátis | Instant Mail",
+    description:
+      "Crie um email temporário de 10 minutos grátis. Receba códigos de verificação, evite spam e proteja sua caixa de entrada real.",
+    hero: {
+      note: "Expira automaticamente · Sem cadastro",
+      h1Start: "Email Temporário 10 Minutos,",
+      h1Accent: " Pronto na Hora",
+      body: "Gere um endereço temporário que expira depois de 10 minutos. Use para cadastros rápidos, códigos de verificação e navegação sem spam.",
+      emailLabel: "Seu email de 10 minutos",
+      emailAria: "Endereço de email temporário de 10 minutos atual",
+      creatingAddress: "Criando seu endereço de 10 minutos...",
+      copyEmail: "Copiar email",
+      copied: "Copiado",
+      refresh: "Atualizar",
+      change: "Trocar",
+      delete: "Excluir",
+      creatingStatus: "Gerando sua caixa temporária de 10 minutos...",
+      readyStatus: "Use este endereço agora. Ele será trocado automaticamente depois de 10 minutos.",
+    },
+    inbox: {
+      ...content.pt.inbox,
+      title: "Caixa de Entrada 10 Minutos",
+      emptyTitle: "Aguardando emails",
+      emptyBody:
+        "Use seu email de 10 minutos em um site ou aplicativo. Códigos e mensagens aparecerão aqui.",
+    },
+    featuresIntro: {
+      label: "Caixa de 10 minutos",
+      title: "Rápido, temporário e feito para mensagens únicas",
+      body: "Uma caixa de curta duração ajuda você a receber emails rápidos sem expor seu endereço pessoal.",
+    },
+    faqIntro: { label: "FAQ", title: "Perguntas sobre email de 10 minutos" },
+    aboutIntro: { label: "Guia", title: "O que é Email Temporário 10 Minutos?" },
+    features: [
+      { icon: Zap, title: "Pronto na hora", description: "Abra a página e receba um endereço temporário em segundos." },
+      { icon: Mail, title: "Expira em 10 minutos", description: "A caixa é substituída depois de 10 minutos para uso rápido." },
+      { icon: Shield, title: "Proteção contra spam", description: "Mantenha cadastros e verificações longe do seu email real." },
+      { icon: UserRound, title: "Sem conta", description: "Não precisa de cadastro, senha ou dados pessoais." },
+    ],
+    faqs: [
+      { question: "O que é email temporário 10 minutos?", answer: "É um endereço descartável que recebe mensagens por um curto período e expira depois de 10 minutos." },
+      { question: "Posso receber códigos de verificação?", answer: "Sim. Use para cadastros simples, links de ativação e códigos de verificação de baixo risco." },
+      { question: "O que acontece depois de 10 minutos?", answer: "A caixa atual expira, a sessão local é limpa e o Instant Mail cria um novo endereço temporário." },
+      { question: "Devo usar em contas importantes?", answer: "Não. Use seu email real para bancos, pagamentos, documentos privados, trabalho e contas que precise recuperar." },
+    ],
+    aboutSections: [
+      { title: "O que é Email Temporário 10 Minutos?", paragraphs: ["Email temporário 10 minutos é um endereço descartável para tarefas rápidas online. Ele permite receber mensagens sem usar sua caixa pessoal.", "É útil para códigos de verificação, links de ativação, testes, downloads e cadastros de curto prazo."] },
+      { title: "Como funciona?", paragraphs: ["O Instant Mail cria uma caixa temporária para sua sessão no navegador. O endereço recebe mensagens por 10 minutos, depois é descartado e substituído.", "Não é necessário criar conta, senha ou informar dados pessoais."] },
+      { title: "Quando usar?", paragraphs: ["Use para sites de baixo risco, newsletters, fóruns, formulários, recursos grátis e testes.", "Não use email temporário para bancos, pagamentos, arquivos sensíveis, contas profissionais ou serviços que você precise recuperar."] },
+    ],
+    timer: {
+      label: "Timer de 10 minutos",
+      expiresIn: "Expira em",
+      expired: "Caixa expirada",
+      creatingNew: "Caixa expirada. Criando uma nova...",
+      responsibleUse: "Use email temporário apenas em atividades de baixo risco. Evite contas sensíveis.",
+    },
+    adLabel: "Anúncio",
+  },
+  es: buildTenMinuteVariant("es", {
+    title: "Correo Temporal 10 Minutos Gratis | Instant Mail",
+    description: "Crea un correo temporal de 10 minutos gratis. Recibe códigos de verificación, evita spam y protege tu bandeja real.",
+    h1Start: "Correo Temporal 10 Minutos,",
+    h1Accent: " Listo al Instante",
+    body: "Genera una dirección temporal que expira después de 10 minutos para registros rápidos, códigos de verificación y navegación sin spam.",
+    emailLabel: "Tu correo de 10 minutos",
+    inboxTitle: "Bandeja 10 Minutos",
+    emptyTitle: "Esperando correos",
+    guideTitle: "¿Qué es el correo temporal 10 minutos?",
+    expiresIn: "Expira en",
+    expired: "Bandeja expirada",
+    creatingNew: "Bandeja expirada. Creando una nueva...",
+    adLabel: "Anuncio",
+  }),
+  fr: buildTenMinuteVariant("fr", {
+    title: "Email Temporaire 10 Minutes Gratuit | Instant Mail",
+    description: "Créez un email temporaire de 10 minutes. Recevez des codes de vérification, évitez le spam et protégez votre boîte personnelle.",
+    h1Start: "Email Temporaire 10 Minutes,",
+    h1Accent: " Prêt Instantanément",
+    body: "Générez une adresse temporaire qui expire après 10 minutes pour les inscriptions rapides, les codes de vérification et la navigation sans spam.",
+    emailLabel: "Votre email de 10 minutes",
+    inboxTitle: "Boîte 10 Minutes",
+    emptyTitle: "En attente d'emails",
+    guideTitle: "Qu'est-ce qu'un email temporaire de 10 minutes ?",
+    expiresIn: "Expire dans",
+    expired: "Boîte expirée",
+    creatingNew: "Boîte expirée. Création d'une nouvelle adresse...",
+    adLabel: "Publicité",
+  }),
+  de: buildTenMinuteVariant("de", {
+    title: "10 Minuten Mail Kostenlos | Instant Mail",
+    description: "Erstellen Sie eine kostenlose 10 Minuten Mail. Empfangen Sie Bestätigungscodes, vermeiden Sie Spam und schützen Sie Ihr echtes Postfach.",
+    h1Start: "10 Minuten Mail,",
+    h1Accent: " Sofort Bereit",
+    body: "Erstellen Sie eine temporäre Adresse, die nach 10 Minuten abläuft. Ideal für schnelle Anmeldungen und Bestätigungscodes.",
+    emailLabel: "Ihre 10 Minuten E-Mail",
+    inboxTitle: "10 Minuten Postfach",
+    emptyTitle: "Warten auf E-Mails",
+    guideTitle: "Was ist 10 Minuten Mail?",
+    expiresIn: "Läuft ab in",
+    expired: "Postfach abgelaufen",
+    creatingNew: "Postfach abgelaufen. Eine neue Adresse wird erstellt...",
+    adLabel: "Anzeige",
+  }),
+  id: buildTenMinuteVariant("id", {
+    title: "Email Sementara 10 Menit Gratis | Instant Mail",
+    description: "Buat email sementara 10 menit secara gratis. Terima kode verifikasi, hindari spam, dan lindungi inbox pribadi Anda.",
+    h1Start: "Email Sementara 10 Menit,",
+    h1Accent: " Siap Seketika",
+    body: "Buat alamat email sementara yang kedaluwarsa setelah 10 menit untuk pendaftaran cepat, kode verifikasi, dan browsing bebas spam.",
+    emailLabel: "Email 10 menit Anda",
+    inboxTitle: "Inbox 10 Menit",
+    emptyTitle: "Menunggu email masuk",
+    guideTitle: "Apa itu email sementara 10 menit?",
+    expiresIn: "Kedaluwarsa dalam",
+    expired: "Inbox kedaluwarsa",
+    creatingNew: "Inbox kedaluwarsa. Membuat yang baru...",
+    adLabel: "Iklan",
+  }),
+  hi: buildTenMinuteVariant("hi", {
+    title: "10 Minute Mail Free Temporary Email | Instant Mail",
+    description: "Free 10 minute temporary email बनाएं. Verification codes receive करें, spam से बचें और अपना real inbox सुरक्षित रखें.",
+    h1Start: "10 Minute Mail,",
+    h1Accent: " तुरंत तैयार",
+    body: "एक temporary email address बनाएं जो 10 minutes के बाद expire हो जाता है. Quick sign-ups और verification codes के लिए उपयोग करें.",
+    emailLabel: "आपका 10 minute email",
+    inboxTitle: "10 Minute Inbox",
+    emptyTitle: "Emails का इंतजार है",
+    guideTitle: "10 Minute Mail क्या है?",
+    expiresIn: "Expires in",
+    expired: "Inbox expired",
+    creatingNew: "Inbox expired. नया address बनाया जा रहा है...",
+    adLabel: "Advertisement",
+  }),
+};
+
+function buildTenMinuteVariant(
+  code: Exclude<LanguageCode, "en" | "pt">,
+  copy: {
+    title: string;
+    description: string;
+    h1Start: string;
+    h1Accent: string;
+    body: string;
+    emailLabel: string;
+    inboxTitle: string;
+    emptyTitle: string;
+    guideTitle: string;
+    expiresIn: string;
+    expired: string;
+    creatingNew: string;
+    adLabel: string;
+  },
+): TenMinuteContent {
+  const base = content[code];
+
+  return {
+    title: copy.title,
+    description: copy.description,
+    hero: {
+      ...base.hero,
+      note: base.hero.note,
+      h1Start: copy.h1Start,
+      h1Accent: copy.h1Accent,
+      body: copy.body,
+      emailLabel: copy.emailLabel,
+      emailAria: copy.emailLabel,
+      creatingAddress: base.hero.creatingAddress,
+      creatingStatus: base.hero.creatingStatus,
+      readyStatus: copy.body,
+    },
+    inbox: {
+      ...base.inbox,
+      title: copy.inboxTitle,
+      emptyTitle: copy.emptyTitle,
+    },
+    featuresIntro: base.featuresIntro,
+    faqIntro: base.faqIntro,
+    aboutIntro: {
+      ...base.aboutIntro,
+      title: copy.guideTitle,
+    },
+    features: base.features,
+    faqs: base.faqs,
+    aboutSections: [
+      { title: copy.guideTitle, paragraphs: [copy.body, base.description] },
+      ...base.aboutSections,
+    ],
+    timer: {
+      label: "10 minute timer",
+      expiresIn: copy.expiresIn,
+      expired: copy.expired,
+      creatingNew: copy.creatingNew,
+      responsibleUse: base.faqs[3]?.answer ?? base.description,
+    },
+    adLabel: copy.adLabel,
+  };
+}
 
 export function isLanguageCode(value: string | undefined): value is LanguageCode {
   return !!value && Object.prototype.hasOwnProperty.call(content, value);
