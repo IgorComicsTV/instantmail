@@ -1,9 +1,10 @@
-import type { MailMessageSummary } from "../../lib/mailtm";
+import type { MailMessageSummary, MailProviderId } from "../../lib/mailtm";
 
 const STORAGE_KEY = "anymail.session.v1";
 
 export type MailSession = {
   accountId?: string;
+  providerId?: MailProviderId;
   address: string;
   password: string;
   token: string;
@@ -11,6 +12,7 @@ export type MailSession = {
   expiresAt?: string;
   readMessageIds: string[];
   lastUpdatedAt?: string;
+  lastMailboxChangeAt?: string;
   lastManualRefreshAt?: string;
 };
 
@@ -27,6 +29,7 @@ export function loadSession(storageKey = STORAGE_KEY): MailSession | null {
     }
 
     return {
+      providerId: "mailtm",
       ...session,
       readMessageIds: Array.isArray(session.readMessageIds)
         ? session.readMessageIds

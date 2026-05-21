@@ -18,15 +18,11 @@ import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
 import Trash2 from "lucide-react/dist/esm/icons/trash-2.js";
 import X from "lucide-react/dist/esm/icons/x.js";
 import {
-  createAccount,
-  createToken,
+  createTempEmailWithRandomDomain,
   deleteAccount,
   downloadAttachment,
-  getDomains,
   getMessage,
   getMessages,
-  makeAddress,
-  makePassword,
   type MailAttachment,
   type MailMessage,
   type MailMessageSummary,
@@ -61,6 +57,7 @@ const POLL_INTERVAL_MS = 8000;
 const INITIAL_REFRESH_DELAY_MS = 1400;
 const TEN_MINUTES_MS = 10 * 60 * 1000;
 const MANUAL_REFRESH_COOLDOWN_MS = 5000;
+const MAILBOX_CHANGE_COOLDOWN_MS = 5000;
 
 function formatDate(value: string | undefined, locale: string, fallback: string) {
   if (!value) {
@@ -302,6 +299,12 @@ export function MailApp({
       ? Date.parse(lastManualRefreshAt) + MANUAL_REFRESH_COOLDOWN_MS
       : 0;
   });
+  const [changeCooldownUntil, setChangeCooldownUntil] = useState(() => {
+    const lastMailboxChangeAt = loadSession(storageKey)?.lastMailboxChangeAt;
+    return lastMailboxChangeAt
+      ? Date.parse(lastMailboxChangeAt) + MAILBOX_CHANGE_COOLDOWN_MS
+      : 0;
+  });
   const createInFlight = useRef(false);
   const refreshInFlight = useRef(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -310,7 +313,8 @@ export function MailApp({
   const hasTenMinuteMode = Boolean(tenMinute);
   const expiresAtTime = session?.expiresAt ? Date.parse(session.expiresAt) : 0;
   const remainingMs = expiresAtTime ? Math.max(0, expiresAtTime - now) : 0;
-  const isRefreshCoolingDown = hasTenMinuteMode && refreshCooldownUntil > now;
+  const isRefreshCoolingDown = refreshCooldownUntil > now;
+  const isChangeCoolingDown = changeCooldownUntil > now;
   const isRefreshDisabled = !session || isBusy || isRefreshCoolingDown;
   const unreadCount = useMemo(
     () => messages.filter((message) => !message.seen).length,
@@ -335,7 +339,10 @@ export function MailApp({
       }
 
       try {
-        const nextMessages = await getMessages(activeSession.token);
+        const nextMessages = await getMessages(
+          activeSession.token,
+          activeSession.providerId,
+        );
         const nextSession = {
           ...activeSession,
           lastUpdatedAt: new Date().toISOString(),
@@ -365,11 +372,6 @@ export function MailApp({
       return;
     }
 
-    if (!hasTenMinuteMode) {
-      void refreshMessages();
-      return;
-    }
-
     const lastManualRefreshAt = new Date().toISOString();
     const nextSession = {
       ...session,
@@ -381,7 +383,11 @@ export function MailApp({
     void refreshMessages(nextSession);
   };
 
-  const createMailbox = useCallback(async (previousSession?: MailSession | null) => {
+  const createMailbox = useCallback(
+    async (
+      previousSession?: MailSession | null,
+      sessionOverrides: Partial<MailSession> = {},
+    ) => {
     if (createInFlight.current) {
       return;
     }
@@ -399,26 +405,22 @@ export function MailApp({
     try {
       if (previousSession?.accountId) {
         try {
-          await deleteAccount(previousSession.token, previousSession.accountId);
+          await deleteAccount(
+            previousSession.token,
+            previousSession.accountId,
+            previousSession.providerId,
+          );
         } catch {
           // Best-effort cleanup only; a failed provider delete should not block a new inbox.
         }
       }
 
-      const domains = await getDomains();
-      const domain = domains[0]?.domain;
-
-      if (!domain) {
-        throw new Error(t.errors.noDomains);
-      }
-
-      const password = makePassword();
-      const address = makeAddress(domain);
-      const account = await createAccount(address, password);
-      const token = await createToken(address, password);
+      const { account, address, password, providerId, token } =
+        await createTempEmailWithRandomDomain();
       const createdAt = new Date();
       const nextSession: MailSession = {
         accountId: account.id,
+        providerId,
         address,
         password,
         token: token.token,
@@ -428,6 +430,7 @@ export function MailApp({
           : undefined,
         readMessageIds: [],
         lastUpdatedAt: new Date().toISOString(),
+        ...sessionOverrides,
       };
 
       persistSession(nextSession);
@@ -442,7 +445,9 @@ export function MailApp({
       createInFlight.current = false;
       setStatus("idle");
     }
-  }, [hasTenMinuteMode, persistSession, t.errors.create, t.errors.noDomains]);
+    },
+    [hasTenMinuteMode, persistSession, t.errors.create],
+  );
 
   const copyAddress = async () => {
     if (!session?.address) {
@@ -475,7 +480,7 @@ export function MailApp({
     setError(null);
 
     try {
-      const detail = await getMessage(session.token, message.id);
+      const detail = await getMessage(session.token, message.id, session.providerId);
       const readMessageIds = Array.from(
         new Set([...session.readMessageIds, message.id]),
       );
@@ -518,6 +523,28 @@ export function MailApp({
     void createMailbox(previousSession);
   };
 
+  const changeMailbox = () => {
+    if (isBusy || isChangeCoolingDown) {
+      return;
+    }
+
+    const lastMailboxChangeAt = new Date().toISOString();
+
+    setChangeCooldownUntil(Date.parse(lastMailboxChangeAt) + MAILBOX_CHANGE_COOLDOWN_MS);
+
+    const previousSession = session;
+    clearSession(storageKey);
+    setSession(null);
+    setMessages([]);
+    setActiveMessageSummary(null);
+    setActiveMessageDetail(null);
+    setMessageModalState("closed");
+    setMessageModalError(null);
+    setPendingEmailLink(null);
+    setAttachmentStatus({});
+    void createMailbox(previousSession, { lastMailboxChangeAt });
+  };
+
   const closeMessage = useCallback(() => {
     setActiveMessageSummary(null);
     setActiveMessageDetail(null);
@@ -552,7 +579,11 @@ export function MailApp({
     }));
 
     try {
-      const blob = await downloadAttachment(session.token, attachment);
+      const blob = await downloadAttachment(
+        session.token,
+        attachment,
+        session.providerId,
+      );
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -681,14 +712,10 @@ export function MailApp({
   }, [createMailbox, hasTenMinuteMode, refreshMessages, session, storageKey]);
 
   useEffect(() => {
-    if (!hasTenMinuteMode) {
-      return undefined;
-    }
-
     const interval = window.setInterval(() => setNow(Date.now()), 1000);
 
     return () => window.clearInterval(interval);
-  }, [hasTenMinuteMode]);
+  }, []);
 
   useEffect(() => {
     if (messageModalState === "closed") {
@@ -812,8 +839,8 @@ export function MailApp({
               <button
                 aria-label="Generate new email address"
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-60"
-                disabled={isBusy}
-                onClick={resetMailbox}
+                disabled={isBusy || isChangeCoolingDown}
+                onClick={changeMailbox}
                 title={t.hero.change}
                 type="button"
               >
@@ -1137,7 +1164,7 @@ export function MailApp({
               rel="noreferrer"
               target="_blank"
             >
-              Mail.tm
+              Mail.tm / Mail.gw
             </a>{" "}
             {t.footer.poweredSuffix}
           </p>
