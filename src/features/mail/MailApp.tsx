@@ -774,6 +774,9 @@ export function MailApp({
             <a className="transition hover:text-brand-600" href={`${anchorBasePath}#about`}>
               {t.nav.about}
             </a>
+            <a className="transition hover:text-brand-600" href={`${basePath}/tools`}>
+              Tools
+            </a>
           </nav>
           <div className="flex items-center gap-2">
             <LanguageMenu

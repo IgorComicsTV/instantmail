@@ -10,6 +10,11 @@ import {
   type LanguageCode,
   type LanguageContent,
 } from "./i18n";
+import {
+  getStandaloneToolCopy,
+  type StandaloneToolSlug,
+  toolsContent,
+} from "../tools/toolsContent";
 
 export const seoToolSlugs = [
   "temp-mail",
@@ -24,7 +29,7 @@ export const seoToolSlugs = [
 ] as const;
 
 export type SeoToolSlug = (typeof seoToolSlugs)[number];
-export type ToolSlug = SeoToolSlug | typeof tenMinuteSlug;
+export type ToolSlug = SeoToolSlug | typeof tenMinuteSlug | "tools" | `tools/${StandaloneToolSlug}`;
 export type SeoToolContent = Pick<
   LanguageContent,
   | "title"
@@ -875,6 +880,10 @@ export function isSeoToolSlug(value: string | undefined): value is SeoToolSlug {
 
 export function getToolNavigationItems(code: LanguageCode): { slug: ToolSlug; label: string }[] {
   return [
+    { slug: "tools" as const, label: toolsContent[code].h1 },
+    { slug: "tools/email-dns-checker" as const, label: getStandaloneToolCopy(code, "email-dns-checker").navLabel },
+    { slug: "tools/what-is-my-ip" as const, label: getStandaloneToolCopy(code, "what-is-my-ip").navLabel },
+    { slug: "tools/password-generator" as const, label: getStandaloneToolCopy(code, "password-generator").navLabel },
     { slug: "temp-mail" as const, label: mergeCopy(code, "temp-mail").navLabel },
     { slug: "temporary-email" as const, label: mergeCopy(code, "temporary-email").navLabel },
     { slug: "disposable-email" as const, label: mergeCopy(code, "disposable-email").navLabel },

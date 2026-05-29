@@ -4,6 +4,13 @@ import { LanguageMenu } from "./components/ui/LanguageMenu";
 import { SiteLogo } from "./components/ui/SiteLogo";
 import { ToolsMenu } from "./components/ui/ToolsMenu";
 import { MailApp } from "./features/mail/MailApp";
+import { ToolsApp } from "./features/tools/ToolsApp";
+import {
+  getStandaloneToolCopy,
+  isStandaloneToolSlug,
+  toolsContent,
+  type StandaloneToolSlug,
+} from "./features/tools/toolsContent";
 import {
   isLanguageCode,
   isTrustPageKey,
@@ -19,18 +26,32 @@ import { isSeoToolSlug, seoToolPages, type SeoToolSlug, type ToolSlug } from "./
 
 type RouteState = {
   language: LanguageCode;
+  hasLanguagePrefix: boolean;
   page: TrustPageKey | "tenMinute" | SeoToolSlug | null;
+  toolsPage: "hub" | StandaloneToolSlug | null;
 };
 
 const CANONICAL_ORIGIN = "https://www.instantmail.online";
 
 function readRoute(): RouteState {
-  const [first, second] = window.location.pathname.split("/").filter(Boolean);
+  const [first, second, third] = window.location.pathname.split("/").filter(Boolean);
   const hasLanguagePrefix = isLanguageCode(first);
   const language = hasLanguagePrefix ? first : "en";
   const pageSegment = hasLanguagePrefix ? second : first;
+  const toolSegment = hasLanguagePrefix ? third : second;
+  const isToolsRoute = pageSegment === "tools";
+  const toolsPage =
+    isToolsRoute
+      ? toolSegment
+        ? isStandaloneToolSlug(toolSegment)
+          ? toolSegment
+          : null
+        : "hub"
+      : null;
   const page =
-    pageSegment === tenMinuteSlug
+    isToolsRoute
+      ? null
+      : pageSegment === tenMinuteSlug
       ? "tenMinute"
       : isSeoToolSlug(pageSegment)
         ? pageSegment
@@ -38,7 +59,7 @@ function readRoute(): RouteState {
         ? pageSegment
         : null;
 
-  return { language, page };
+  return { language, hasLanguagePrefix, page, toolsPage };
 }
 
 function setMeta(name: string, value: string) {
@@ -85,18 +106,34 @@ function setLink(rel: string, href: string, hreflang?: string) {
   element.href = href;
 }
 
-function useSeo(content: LanguageContent, page: RouteState["page"]) {
+function useSeo(
+  content: LanguageContent,
+  page: RouteState["page"],
+  toolsPage: RouteState["toolsPage"],
+  hasLanguagePrefix: boolean,
+) {
   useEffect(() => {
     const trustPage = page && isTrustPageKey(page) ? content.trustPages[page] : null;
     const toolPage = page && isSeoToolSlug(page) ? seoToolPages[page][content.code] : null;
     const tenMinutePage = page === "tenMinute" ? tenMinuteContent[content.code] : null;
-    const title = tenMinutePage?.title ?? toolPage?.title ?? (trustPage ? `${trustPage.title} | Instant Mail` : content.title);
-    const description = tenMinutePage?.description ?? toolPage?.description ?? trustPage?.description ?? content.description;
-    const path = page === "tenMinute"
+    const standaloneTool = toolsPage && toolsPage !== "hub" ? getStandaloneToolCopy(content.code, toolsPage) : null;
+    const toolsHub = toolsPage === "hub" ? toolsContent[content.code] : null;
+    const title = standaloneTool?.title ?? toolsHub?.title ?? tenMinutePage?.title ?? toolPage?.title ?? (trustPage ? `${trustPage.title} | Instant Mail` : content.title);
+    const description = standaloneTool?.description ?? toolsHub?.description ?? tenMinutePage?.description ?? toolPage?.description ?? trustPage?.description ?? content.description;
+    const toolsPath = toolsPage === "hub"
+      ? hasLanguagePrefix
+        ? `/${content.code}/tools`
+        : "/tools"
+      : toolsPage
+        ? hasLanguagePrefix
+          ? `/${content.code}/tools/${toolsPage}`
+          : `/tools/${toolsPage}`
+        : null;
+    const path = toolsPath ?? (page === "tenMinute"
       ? `/${content.code}/${tenMinuteSlug}`
       : page
         ? `/${content.code}/${page}`
-        : `/${content.code}/`;
+        : `/${content.code}/`);
     const canonical = `${CANONICAL_ORIGIN}${path}`;
 
     document.documentElement.lang = content.code;
@@ -110,7 +147,11 @@ function useSeo(content: LanguageContent, page: RouteState["page"]) {
     setLink("canonical", canonical);
 
     languageOrder.forEach((code) => {
-      const alternatePath = page === "tenMinute"
+      const alternatePath = toolsPage === "hub"
+        ? `/${code}/tools`
+        : toolsPage
+          ? `/${code}/tools/${toolsPage}`
+        : page === "tenMinute"
         ? `/${code}/${tenMinuteSlug}`
         : page
           ? `/${code}/${page}`
@@ -119,14 +160,18 @@ function useSeo(content: LanguageContent, page: RouteState["page"]) {
     });
     setLink(
       "alternate",
-      page === "tenMinute"
+      toolsPage === "hub"
+        ? `${CANONICAL_ORIGIN}/tools`
+        : toolsPage
+          ? `${CANONICAL_ORIGIN}/tools/${toolsPage}`
+      : page === "tenMinute"
         ? `${CANONICAL_ORIGIN}/en/${tenMinuteSlug}`
         : page
           ? `${CANONICAL_ORIGIN}/en/${page}`
         : `${CANONICAL_ORIGIN}/en/`,
       "x-default",
     );
-  }, [content, page]);
+  }, [content, hasLanguagePrefix, page, toolsPage]);
 }
 
 function TrustPage({
@@ -164,6 +209,9 @@ function TrustPage({
             </a>
             <a className="transition hover:text-brand-600" href={`${basePath}/contact`}>
               {content.footer.contact}
+            </a>
+            <a className="transition hover:text-brand-600" href={`${basePath}/tools`}>
+              Tools
             </a>
           </nav>
           <div className="flex items-center gap-2">
@@ -272,11 +320,17 @@ export function App() {
       }
     : null;
 
-  useSeo(content, route.page);
+  useSeo(content, route.page, route.toolsPage, route.hasLanguagePrefix);
 
   return (
     <>
-      {route.page === "tenMinute" ? (
+      {route.toolsPage ? (
+        <ToolsApp
+          language={route.language}
+          tool={route.toolsPage === "hub" ? null : route.toolsPage}
+          hasLanguagePrefix={route.hasLanguagePrefix}
+        />
+      ) : route.page === "tenMinute" ? (
         <MailApp
           content={tenMinuteMailContent}
           basePath={`/${content.code}`}

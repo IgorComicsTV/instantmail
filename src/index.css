@@ -39,7 +39,8 @@ a {
   color: inherit;
 }
 
-.language-menu summary::-webkit-details-marker {
+.language-menu summary::-webkit-details-marker,
+.tools-menu summary::-webkit-details-marker {
   display: none;
 }
 
