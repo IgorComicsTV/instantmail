@@ -70,7 +70,7 @@ Current/planned stack:
 
 - Frontend: React / Next.js / Vite
 - Styling: Tailwind CSS
-- Temporary email API: Mail.tm or compatible disposable email API
+- Temporary email API: Mail.tm & Mail.gw or compatible disposable email API
 - Hosting: Vercel
 
 > Update this section based on your actual implementation.
