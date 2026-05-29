@@ -29,7 +29,9 @@ import {
 } from "../../lib/mailtm";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
 import { SiteLogo } from "../../components/ui/SiteLogo";
+import { ToolsMenu } from "../../components/ui/ToolsMenu";
 import { type LanguageCode, type LanguageContent, type TenMinuteContent } from "./i18n";
+import { type ToolSlug } from "./toolPages";
 import {
   clearSession,
   loadSession,
@@ -43,9 +45,11 @@ type MessageModalState = "closed" | "loading" | "ready" | "error";
 type MailAppProps = {
   content: LanguageContent;
   basePath: string;
+  anchorBasePath?: string;
   languageHrefFor?: (code: LanguageCode) => string;
   storageKey?: string;
   tenMinute?: TenMinuteContent;
+  currentToolSlug?: ToolSlug;
 };
 type PendingEmailLink = {
   displayUrl: string;
@@ -268,9 +272,11 @@ function parseEmailLink(rawHref: string): PendingEmailLink {
 export function MailApp({
   content: t,
   basePath,
+  anchorBasePath = `${basePath}/`,
   languageHrefFor,
   storageKey,
   tenMinute,
+  currentToolSlug,
 }: MailAppProps) {
   const [session, setSession] = useState<MailSession | null>(() =>
     loadSession(storageKey),
@@ -756,19 +762,16 @@ export function MailApp({
             </span>
           </a>
           <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
-            <a className="transition hover:text-brand-600" href={`${basePath}/#inbox`}>
+            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#inbox`}>
               {t.nav.inbox}
             </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/10-minute-mail`}>
-              10 Minute Mail
-            </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/#features`}>
+            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#features`}>
               {t.nav.features}
             </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/#faq`}>
+            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#faq`}>
               {t.nav.faq}
             </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/#about`}>
+            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#about`}>
               {t.nav.about}
             </a>
           </nav>
@@ -776,6 +779,11 @@ export function MailApp({
             <LanguageMenu
               current={t.code}
               hrefFor={languageHrefFor ?? ((code) => `/${code}/`)}
+            />
+            <ToolsMenu
+              currentLanguage={t.code}
+              currentSlug={currentToolSlug}
+              hrefFor={(slug) => `${basePath}/${slug}`}
             />
           </div>
         </div>
@@ -1131,16 +1139,16 @@ export function MailApp({
             <span className="font-bold text-slate-900">Instant Mail</span>
           </div>
           <nav className="flex flex-wrap gap-6 text-sm font-medium text-slate-600">
-            <a className="transition hover:text-brand-600" href={`${basePath}/#inbox`}>
+            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#inbox`}>
               {t.nav.inbox}
             </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/#features`}>
+            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#features`}>
               {t.nav.features}
             </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/#faq`}>
+            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#faq`}>
               {t.nav.faq}
             </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/#about`}>
+            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#about`}>
               {t.nav.about}
             </a>
             <a className="transition hover:text-brand-600" href={`${basePath}/privacy`}>

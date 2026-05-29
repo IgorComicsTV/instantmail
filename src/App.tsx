@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { LanguageMenu } from "./components/ui/LanguageMenu";
 import { SiteLogo } from "./components/ui/SiteLogo";
+import { ToolsMenu } from "./components/ui/ToolsMenu";
 import { MailApp } from "./features/mail/MailApp";
 import {
   isLanguageCode,
@@ -14,22 +15,27 @@ import {
   type LanguageContent,
   type TrustPageKey,
 } from "./features/mail/i18n";
+import { isSeoToolSlug, seoToolPages, type SeoToolSlug, type ToolSlug } from "./features/mail/toolPages";
 
 type RouteState = {
   language: LanguageCode;
-  page: TrustPageKey | "tenMinute" | null;
+  page: TrustPageKey | "tenMinute" | SeoToolSlug | null;
 };
 
 const CANONICAL_ORIGIN = "https://www.instantmail.online";
 
 function readRoute(): RouteState {
   const [first, second] = window.location.pathname.split("/").filter(Boolean);
-  const language = isLanguageCode(first) ? first : "en";
+  const hasLanguagePrefix = isLanguageCode(first);
+  const language = hasLanguagePrefix ? first : "en";
+  const pageSegment = hasLanguagePrefix ? second : first;
   const page =
-    second === tenMinuteSlug
+    pageSegment === tenMinuteSlug
       ? "tenMinute"
-      : isTrustPageKey(second)
-        ? second
+      : isSeoToolSlug(pageSegment)
+        ? pageSegment
+      : isTrustPageKey(pageSegment)
+        ? pageSegment
         : null;
 
   return { language, page };
@@ -81,10 +87,11 @@ function setLink(rel: string, href: string, hreflang?: string) {
 
 function useSeo(content: LanguageContent, page: RouteState["page"]) {
   useEffect(() => {
-    const trustPage = page && page !== "tenMinute" ? content.trustPages[page] : null;
+    const trustPage = page && isTrustPageKey(page) ? content.trustPages[page] : null;
+    const toolPage = page && isSeoToolSlug(page) ? seoToolPages[page][content.code] : null;
     const tenMinutePage = page === "tenMinute" ? tenMinuteContent[content.code] : null;
-    const title = tenMinutePage?.title ?? (trustPage ? `${trustPage.title} | Instant Mail` : content.title);
-    const description = tenMinutePage?.description ?? trustPage?.description ?? content.description;
+    const title = tenMinutePage?.title ?? toolPage?.title ?? (trustPage ? `${trustPage.title} | Instant Mail` : content.title);
+    const description = tenMinutePage?.description ?? toolPage?.description ?? trustPage?.description ?? content.description;
     const path = page === "tenMinute"
       ? `/${content.code}/${tenMinuteSlug}`
       : page
@@ -114,6 +121,8 @@ function useSeo(content: LanguageContent, page: RouteState["page"]) {
       "alternate",
       page === "tenMinute"
         ? `${CANONICAL_ORIGIN}/en/${tenMinuteSlug}`
+        : page
+          ? `${CANONICAL_ORIGIN}/en/${page}`
         : `${CANONICAL_ORIGIN}/en/`,
       "x-default",
     );
@@ -157,7 +166,13 @@ function TrustPage({
               {content.footer.contact}
             </a>
           </nav>
-          <LanguageMenu current={content.code} hrefFor={(code) => `/${code}/${page}`} />
+          <div className="flex items-center gap-2">
+            <LanguageMenu current={content.code} hrefFor={(code) => `/${code}/${page}`} />
+            <ToolsMenu
+              currentLanguage={content.code}
+              hrefFor={(slug: ToolSlug) => `${basePath}/${slug}`}
+            />
+          </div>
         </div>
       </header>
 
@@ -236,6 +251,26 @@ export function App() {
     faqs: tenMinutePage.faqs,
     aboutSections: tenMinutePage.aboutSections,
   };
+  let currentSeoToolSlug: SeoToolSlug | null = null;
+  if (route.page && isSeoToolSlug(route.page)) {
+    currentSeoToolSlug = route.page;
+  }
+  const seoToolPage = currentSeoToolSlug ? seoToolPages[currentSeoToolSlug][route.language] : null;
+  const seoToolMailContent: LanguageContent | null = seoToolPage
+    ? {
+        ...content,
+        title: seoToolPage.title,
+        description: seoToolPage.description,
+        hero: seoToolPage.hero,
+        inbox: seoToolPage.inbox,
+        featuresIntro: seoToolPage.featuresIntro,
+        faqIntro: seoToolPage.faqIntro,
+        aboutIntro: seoToolPage.aboutIntro,
+        features: seoToolPage.features,
+        faqs: seoToolPage.faqs,
+        aboutSections: seoToolPage.aboutSections,
+      }
+    : null;
 
   useSeo(content, route.page);
 
@@ -245,11 +280,21 @@ export function App() {
         <MailApp
           content={tenMinuteMailContent}
           basePath={`/${content.code}`}
+          anchorBasePath={`/${content.code}/${tenMinuteSlug}`}
           languageHrefFor={(code) => `/${code}/${tenMinuteSlug}`}
           storageKey="instantmail.10-minute-session.v1"
           tenMinute={tenMinutePage}
+          currentToolSlug={tenMinuteSlug}
         />
-      ) : route.page ? (
+      ) : seoToolMailContent && currentSeoToolSlug ? (
+        <MailApp
+          content={seoToolMailContent}
+          basePath={`/${content.code}`}
+          anchorBasePath={`/${content.code}/${currentSeoToolSlug}`}
+          languageHrefFor={(code) => `/${code}/${currentSeoToolSlug}`}
+          currentToolSlug={currentSeoToolSlug}
+        />
+      ) : route.page && isTrustPageKey(route.page) ? (
         <TrustPage content={content} page={route.page} />
       ) : (
         <MailApp content={content} basePath={`/${content.code}`} />
