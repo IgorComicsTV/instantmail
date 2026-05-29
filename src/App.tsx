@@ -20,6 +20,8 @@ type RouteState = {
   page: TrustPageKey | "tenMinute" | null;
 };
 
+const CANONICAL_ORIGIN = "https://www.instantmail.online";
+
 function readRoute(): RouteState {
   const [first, second] = window.location.pathname.split("/").filter(Boolean);
   const language = isLanguageCode(first) ? first : "en";
@@ -88,7 +90,7 @@ function useSeo(content: LanguageContent, page: RouteState["page"]) {
       : page
         ? `/${content.code}/${page}`
         : `/${content.code}/`;
-    const canonical = `${window.location.origin}${path}`;
+    const canonical = `${CANONICAL_ORIGIN}${path}`;
 
     document.documentElement.lang = content.code;
     document.title = title;
@@ -106,13 +108,13 @@ function useSeo(content: LanguageContent, page: RouteState["page"]) {
         : page
           ? `/${code}/${page}`
           : `/${code}/`;
-      setLink("alternate", `${window.location.origin}${alternatePath}`, code);
+      setLink("alternate", `${CANONICAL_ORIGIN}${alternatePath}`, code);
     });
     setLink(
       "alternate",
       page === "tenMinute"
-        ? `${window.location.origin}/en/${tenMinuteSlug}`
-        : `${window.location.origin}/en/`,
+        ? `${CANONICAL_ORIGIN}/en/${tenMinuteSlug}`
+        : `${CANONICAL_ORIGIN}/en/`,
       "x-default",
     );
   }, [content, page]);
