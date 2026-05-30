@@ -10,7 +10,7 @@ function localizedPath(languageCode: string | undefined, path: string) {
   return `/${code}${path}`;
 }
 
-export function SiteFooter({ languageCode = "en", showProviderNote = false }: SiteFooterProps) {
+export function SiteFooter({ languageCode = "en", showProviderNote = true }: SiteFooterProps) {
   const columns = [
     {
       title: "Product",
@@ -62,8 +62,12 @@ export function SiteFooter({ languageCode = "en", showProviderNote = false }: Si
               Temporary inboxes are powered by third-party providers including{" "}
               <a className="font-semibold text-slate-700 hover:text-blue-700" href="https://mail.tm/" rel="noreferrer" target="_blank">
                 Mail.tm
-              </a>{" "}
-              and Mail.gw. Instant Mail does not sell provider access.
+              </a>
+              , Mail.gw, and{" "}
+              <a className="font-semibold text-slate-700 hover:text-blue-700" href="https://catchmail.io/" rel="noreferrer" target="_blank">
+                CatchMail
+              </a>
+              . Instant Mail does not sell provider access.
             </p>
           ) : null}
         </div>

@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/catchmail/:path*",
+      "destination": "https://api.catchmail.io/:path*"
+    },
+    {
       "source": "/((?!.*\\..*).*)",
       "destination": "/"
     }
