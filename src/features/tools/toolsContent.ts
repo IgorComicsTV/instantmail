@@ -20,6 +20,10 @@ type ToolPageCopy = {
   title: string;
   description: string;
   h1: string;
+  privacyTitle: string;
+  privacyBody: string;
+  faqTitle: string;
+  faq: { question: string; answer: string }[];
 };
 
 export type ToolsCopy = {
@@ -127,11 +131,39 @@ const en: ToolsCopy = {
     explanationTitle: "What this checks",
     explanation:
       "Email DNS records help receiving mail servers understand where to deliver email and whether messages are authorized.",
+    privacyTitle: "Privacy note",
+    privacyBody:
+      "DNS checks are performed from your browser through Cloudflare DNS over HTTPS. Instant Mail does not ask for mailbox passwords, DNS login credentials, or private email account access.",
+    faqTitle: "Email DNS Checker FAQ",
+    faq: [
+      {
+        question: "What records should a domain have for email?",
+        answer:
+          "Most domains that send and receive email should have MX records for receiving mail, SPF for allowed senders, DKIM for message signatures, and DMARC for policy and reporting.",
+      },
+      {
+        question: "Why is my SPF record missing?",
+        answer:
+          "Some domains do not send email or have not configured SPF yet. If you use a provider like Google Workspace, Microsoft 365, or a marketing platform, follow that provider's SPF instructions.",
+      },
+      {
+        question: "Do I need a DKIM selector?",
+        answer:
+          "Yes. DKIM records are published under a selector such as default, google, selector1, or k1. Your email provider usually tells you which selector to check.",
+      },
+      {
+        question: "Can this fix my DNS automatically?",
+        answer:
+          "No. This tool only reads public DNS records. To fix records, update DNS inside your domain registrar, DNS host, or email provider dashboard.",
+      },
+    ],
     sections: [
-      { title: "MX records", body: "MX records tell the internet which mail servers receive email for a domain." },
-      { title: "SPF", body: "SPF is a TXT record that lists which servers are allowed to send email for a domain." },
-      { title: "DKIM", body: "DKIM uses a selector record to publish a public key for email signature verification." },
-      { title: "DMARC", body: "DMARC tells receivers how to handle messages that fail SPF or DKIM checks." },
+      { title: "MX records", body: "MX records tell the internet which mail servers receive email for a domain. Missing MX records usually mean the domain cannot receive normal email." },
+      { title: "SPF", body: "SPF is a TXT record that lists which servers are allowed to send email for a domain. A missing or overly broad SPF policy can hurt deliverability." },
+      { title: "DKIM", body: "DKIM uses a selector record to publish a public key for email signature verification. Check the selector used by your email provider, such as default, google, selector1, or k1." },
+      { title: "DMARC", body: "DMARC tells receivers how to handle messages that fail SPF or DKIM checks. It also helps domain owners monitor spoofing and improve email trust." },
+      { title: "When to use it", body: "Use this checker when setting up business email, troubleshooting deliverability, moving providers, or confirming that a domain is ready to receive and authenticate mail." },
+      { title: "Privacy note", body: "The checker sends DNS queries to Cloudflare DNS over HTTPS from your browser. It does not require an account and does not ask for mailbox credentials." },
     ],
   },
   ip: {
@@ -147,12 +179,37 @@ const en: ToolsCopy = {
     description:
       "Instantly check your public IP address online with Instant Mail. Fast, simple, and free IP lookup tool.",
     h1: "What Is My IP Address?",
-    yourIp: "Your public IP address",
     privacyTitle: "Privacy note",
+    privacyBody:
+      "This IP checker requests your public IP from ipify and displays it on the page. It does not ask for your name, exact location, account login, or device permissions.",
+    faqTitle: "What Is My IP FAQ",
+    faq: [
+      {
+        question: "What is a public IP address?",
+        answer:
+          "It is the network address websites can see when your browser connects to them. It may represent your home connection, mobile carrier, workplace network, or VPN.",
+      },
+      {
+        question: "Can this show my exact home address?",
+        answer:
+          "No. A public IP can sometimes suggest a city or network provider, but this tool does not request GPS location or precise address data.",
+      },
+      {
+        question: "Why did my IP change?",
+        answer:
+          "Your IP may change when you switch networks, restart a router, move from Wi-Fi to mobile data, or enable a VPN.",
+      },
+      {
+        question: "Does Instant Mail store my IP lookup?",
+        answer:
+          "The tool is designed to display the IP visible to websites. Do not use it as a private audit log or security monitoring system.",
+      },
+    ],
+    yourIp: "Your public IP address",
     privacyNote: "This tool only displays the IP address visible to websites you visit.",
     explanationTitle: "What is a public IP address?",
     explanation:
-      "Your public IP address is the network address websites see when your browser connects to them. It may belong to your home network, mobile carrier, VPN, or office connection.",
+      "Your public IP address is the network address websites see when your browser connects to them. It may belong to your home network, mobile carrier, VPN, or office connection. If the value changes after enabling a VPN or switching networks, that usually means your traffic is reaching websites through a different route.",
   },
   password: {
     navLabel: "Password Generator",
@@ -167,6 +224,32 @@ const en: ToolsCopy = {
     description:
       "Generate strong, secure passwords online with Instant Mail. Free password generator with custom length, symbols, numbers, and letters.",
     h1: "Secure Password Generator",
+    privacyTitle: "Password privacy",
+    privacyBody:
+      "Passwords are generated locally in your browser with crypto.getRandomValues. Instant Mail does not send generated passwords to a server, save them, or log them.",
+    faqTitle: "Password Generator FAQ",
+    faq: [
+      {
+        question: "Are passwords sent to Instant Mail?",
+        answer:
+          "No. Passwords are generated locally in your browser and are never sent to an Instant Mail server.",
+      },
+      {
+        question: "What length should I use?",
+        answer:
+          "Use at least 16 characters for most accounts. For important accounts, longer unique passwords stored in a password manager are better.",
+      },
+      {
+        question: "Should every account have a different password?",
+        answer:
+          "Yes. Reusing passwords makes many accounts vulnerable if one website leaks credentials.",
+      },
+      {
+        question: "Is this a password manager?",
+        answer:
+          "No. This tool generates passwords only. Store important passwords in a trusted password manager.",
+      },
+    ],
     length: "Length",
     uppercase: "Uppercase",
     lowercase: "Lowercase",
@@ -181,7 +264,7 @@ const en: ToolsCopy = {
     chooseOne: "Select at least one character type.",
     explanationTitle: "How to use this generator",
     explanation:
-      "Use longer passwords with multiple character types for important accounts. Store unique passwords in a trusted password manager.",
+      "Use longer passwords with multiple character types for important accounts. A strong password should be unique for every service, hard to guess, and stored in a trusted password manager. This generator runs locally in your browser with crypto.getRandomValues and does not send generated passwords anywhere.",
   },
 };
 

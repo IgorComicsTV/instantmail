@@ -155,7 +155,7 @@ function ToolCard({
 
 function ToolsHub({ language, hasLanguagePrefix }: ToolsAppProps) {
   const content = toolsContent[language];
-  const basePath = hasLanguagePrefix ? `/${language}` : "";
+  const emailBasePath = hasLanguagePrefix ? `/${language}` : "/en";
 
   return (
     <PageShell language={language} hasLanguagePrefix={hasLanguagePrefix}>
@@ -198,7 +198,7 @@ function ToolsHub({ language, hasLanguagePrefix }: ToolsAppProps) {
                 <ToolCard
                   button={content.openTool}
                   description={content.temporaryEmailCardDescription}
-                  href={normalizePath(`${basePath}/${item.slug}`)}
+                  href={normalizePath(`${emailBasePath}/${item.slug}`)}
                   icon={ShieldCheck}
                   key={item.slug}
                   title={item.label}
@@ -213,18 +213,20 @@ function ToolsHub({ language, hasLanguagePrefix }: ToolsAppProps) {
 
 function MoreTools({ language, hasLanguagePrefix }: Pick<ToolsAppProps, "language" | "hasLanguagePrefix">) {
   const content = toolsContent[language];
-  const basePath = hasLanguagePrefix ? `/${language}` : "";
+  const emailBasePath = hasLanguagePrefix ? `/${language}` : "/en";
 
   const links = [
     ...standaloneToolSlugs.map((slug) => ({
       href: hasLanguagePrefix ? `/${language}/tools/${slug}` : `/tools/${slug}`,
       label: getStandaloneToolCopy(language, slug).hubTitle,
     })),
-    { href: normalizePath(`${basePath}/`), label: content.homepage },
-    ...getToolNavigationItems(language).slice(0, 4).map((item) => ({
-      href: normalizePath(`${basePath}/${item.slug}`),
-      label: item.label,
-    })),
+    { href: normalizePath(`${emailBasePath}/`), label: content.homepage },
+    ...getToolNavigationItems(language)
+      .filter((item) => !item.slug.startsWith("tools"))
+      .map((item) => ({
+        href: normalizePath(`${emailBasePath}/${item.slug}`),
+        label: item.label,
+      })),
   ];
 
   return (
@@ -355,6 +357,11 @@ function EmailDnsChecker({ language, hasLanguagePrefix }: ToolsAppProps) {
         </button>
       </form>
       {error ? <p className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</p> : null}
+      {!sections.length && !error ? (
+        <p className="mt-4 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm text-blue-800">
+          Enter a domain to check the public email records used for receiving mail and authenticating senders.
+        </p>
+      ) : null}
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         {sections.map((section) => (
           <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" key={section.title}>
@@ -536,6 +543,41 @@ function InfoBlocks({ title, body, sections }: { title: string; body: string; se
   );
 }
 
+function ToolTrustAndFaq({
+  copy,
+}: {
+  copy: {
+    privacyTitle: string;
+    privacyBody: string;
+    faqTitle: string;
+    faq: { question: string; answer: string }[];
+  };
+}) {
+  return (
+    <section className="mt-10 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+      <article className="rounded-2xl border border-blue-100 bg-blue-50 p-6">
+        <h2 className="text-xl font-bold text-slate-950">{copy.privacyTitle}</h2>
+        <p className="mt-3 text-sm leading-relaxed text-slate-700">
+          {copy.privacyBody}
+        </p>
+      </article>
+      <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-bold text-slate-950">{copy.faqTitle}</h2>
+        <div className="mt-5 grid gap-4">
+          {copy.faq.map((item) => (
+            <div className="rounded-xl bg-slate-50 p-4" key={item.question}>
+              <h3 className="font-bold text-slate-900">{item.question}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                {item.answer}
+              </p>
+            </div>
+          ))}
+        </div>
+      </article>
+    </section>
+  );
+}
+
 function ToolPageFrame({
   children,
   copy,
@@ -543,7 +585,15 @@ function ToolPageFrame({
   hasLanguagePrefix,
 }: {
   children: ReactNode;
-  copy: { toolsLabel: string; h1: string; description: string };
+  copy: {
+    toolsLabel: string;
+    h1: string;
+    description: string;
+    privacyTitle: string;
+    privacyBody: string;
+    faqTitle: string;
+    faq: { question: string; answer: string }[];
+  };
   language: LanguageCode;
   hasLanguagePrefix: boolean;
 }) {
@@ -557,7 +607,10 @@ function ToolPageFrame({
         </div>
       </section>
       <section className="bg-slate-50 px-4 py-12 text-slate-950 sm:px-6">
-        <div className="mx-auto max-w-6xl">{children}</div>
+        <div className="mx-auto max-w-6xl">
+          {children}
+          <ToolTrustAndFaq copy={copy} />
+        </div>
       </section>
       <MoreTools language={language} hasLanguagePrefix={hasLanguagePrefix} />
     </PageShell>

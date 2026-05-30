@@ -14,7 +14,6 @@ import {
 import {
   isLanguageCode,
   isTrustPageKey,
-  languageOrder,
   languages,
   tenMinuteContent,
   tenMinuteSlug,
@@ -29,9 +28,17 @@ type RouteState = {
   hasLanguagePrefix: boolean;
   page: TrustPageKey | "tenMinute" | SeoToolSlug | null;
   toolsPage: "hub" | StandaloneToolSlug | null;
+  isFallbackRoute: boolean;
 };
 
 const CANONICAL_ORIGIN = "https://www.instantmail.online";
+const ADSENSE_INDEX_LANGUAGES: LanguageCode[] = ["en", "pt", "es", "fr"];
+const ADSENSE_INDEX_EMAIL_TOOLS: SeoToolSlug[] = [
+  "temporary-email",
+  "temporary-email-for-verification",
+  "temp-mail-for-developers",
+  "disposable-email-for-testing",
+];
 
 function readRoute(): RouteState {
   const [first, second, third] = window.location.pathname.split("/").filter(Boolean);
@@ -58,8 +65,15 @@ function readRoute(): RouteState {
       : isTrustPageKey(pageSegment)
         ? pageSegment
         : null;
+  const isKnownPage =
+    !pageSegment ||
+    !!toolsPage ||
+    pageSegment === tenMinuteSlug ||
+    isSeoToolSlug(pageSegment) ||
+    isTrustPageKey(pageSegment);
+  const isFallbackRoute = !!pageSegment && !isKnownPage;
 
-  return { language, hasLanguagePrefix, page, toolsPage };
+  return { language, hasLanguagePrefix, page, toolsPage, isFallbackRoute };
 }
 
 function setMeta(name: string, value: string) {
@@ -106,11 +120,60 @@ function setLink(rel: string, href: string, hreflang?: string) {
   element.href = href;
 }
 
+function clearAlternateLinks() {
+  document
+    .querySelectorAll<HTMLLinkElement>('link[rel="alternate"]')
+    .forEach((element) => element.remove());
+}
+
+function isAdsenseIndexableRoute(
+  code: LanguageCode,
+  page: RouteState["page"],
+  toolsPage: RouteState["toolsPage"],
+  hasLanguagePrefix: boolean,
+  isFallbackRoute: boolean,
+) {
+  if (isFallbackRoute) {
+    return false;
+  }
+
+  if (toolsPage) {
+    return !hasLanguagePrefix;
+  }
+
+  if (!page) {
+    return hasLanguagePrefix && ADSENSE_INDEX_LANGUAGES.includes(code);
+  }
+
+  if (isTrustPageKey(page)) {
+    return ADSENSE_INDEX_LANGUAGES.includes(code);
+  }
+
+  if (page === "tenMinute") {
+    return code === "en";
+  }
+
+  return code === "en" && ADSENSE_INDEX_EMAIL_TOOLS.includes(page);
+}
+
+function getSeoAlternateCodes(page: RouteState["page"], toolsPage: RouteState["toolsPage"]) {
+  if (toolsPage) {
+    return [] as LanguageCode[];
+  }
+
+  if (!page || isTrustPageKey(page)) {
+    return ADSENSE_INDEX_LANGUAGES;
+  }
+
+  return ["en"] as LanguageCode[];
+}
+
 function useSeo(
   content: LanguageContent,
   page: RouteState["page"],
   toolsPage: RouteState["toolsPage"],
   hasLanguagePrefix: boolean,
+  isFallbackRoute: boolean,
 ) {
   useEffect(() => {
     const trustPage = page && isTrustPageKey(page) ? content.trustPages[page] : null;
@@ -135,10 +198,18 @@ function useSeo(
         ? `/${content.code}/${page}`
         : `/${content.code}/`);
     const canonical = `${CANONICAL_ORIGIN}${path}`;
+    const isIndexable = isAdsenseIndexableRoute(
+      content.code,
+      page,
+      toolsPage,
+      hasLanguagePrefix,
+      isFallbackRoute,
+    );
 
     document.documentElement.lang = content.code;
     document.title = title;
     setMeta("description", description);
+    setMeta("robots", isIndexable ? "index, follow" : "noindex, follow");
     setPropertyMeta("og:title", title);
     setPropertyMeta("og:description", description);
     setPropertyMeta("og:url", canonical);
@@ -146,7 +217,8 @@ function useSeo(
     setMeta("twitter:description", description);
     setLink("canonical", canonical);
 
-    languageOrder.forEach((code) => {
+    clearAlternateLinks();
+    getSeoAlternateCodes(page, toolsPage).forEach((code) => {
       const alternatePath = toolsPage === "hub"
         ? `/${code}/tools`
         : toolsPage
@@ -171,7 +243,7 @@ function useSeo(
         : `${CANONICAL_ORIGIN}/en/`,
       "x-default",
     );
-  }, [content, hasLanguagePrefix, page, toolsPage]);
+  }, [content, hasLanguagePrefix, isFallbackRoute, page, toolsPage]);
 }
 
 function TrustPage({
@@ -276,6 +348,9 @@ function TrustPage({
           <a className="hover:text-brand-600" href={`${basePath}/faq`}>
             {content.footer.faq}
           </a>
+          <a className="hover:text-brand-600" href={`${basePath}/tools`}>
+            Tools
+          </a>
         </div>
       </footer>
     </main>
@@ -320,7 +395,13 @@ export function App() {
       }
     : null;
 
-  useSeo(content, route.page, route.toolsPage, route.hasLanguagePrefix);
+  useSeo(
+    content,
+    route.page,
+    route.toolsPage,
+    route.hasLanguagePrefix,
+    route.isFallbackRoute,
+  );
 
   return (
     <>
