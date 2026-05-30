@@ -4,6 +4,18 @@
   <url><loc>https://www.instantmail.online/tools/email-dns-checker</loc><priority>0.8</priority></url>
   <url><loc>https://www.instantmail.online/tools/what-is-my-ip</loc><priority>0.8</priority></url>
   <url><loc>https://www.instantmail.online/tools/password-generator</loc><priority>0.8</priority></url>
+  <url><loc>https://www.instantmail.online/safe-use-policy</loc><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides</loc><priority>0.8</priority></url>
+  <url><loc>https://www.instantmail.online/guides/what-is-a-temporary-email</loc><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/is-temporary-email-safe</loc><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/temporary-email-for-verification-codes</loc><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-avoid-spam-emails</loc><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/disposable-email-vs-regular-email</loc><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/what-is-a-burner-email</loc><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-developers-can-test-email-signups</loc><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-protect-your-email-address-online</loc><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/what-is-a-data-breach-and-how-to-prevent-it</loc><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-create-a-temp-mail-without-registration</loc><priority>0.7</priority></url>
   <url><loc>https://www.instantmail.online/en/</loc><priority>1.0</priority></url>
   <url><loc>https://www.instantmail.online/en/about</loc><priority>0.7</priority></url>
   <url><loc>https://www.instantmail.online/en/contact</loc><priority>0.7</priority></url>

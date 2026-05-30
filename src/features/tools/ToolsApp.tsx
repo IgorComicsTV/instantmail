@@ -17,6 +17,7 @@ import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
 import ShieldCheck from "lucide-react/dist/esm/icons/shield-check.js";
 import type { LucideIcon } from "lucide-react";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
+import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
 import { ToolsMenu } from "../../components/ui/ToolsMenu";
 import { getToolNavigationItems } from "../mail/toolPages";
@@ -77,6 +78,12 @@ function Header({ language, hasLanguagePrefix, tool }: ToolsAppProps) {
           <a className="transition hover:text-white" href={toolsPath}>
             Tools
           </a>
+          <a className="transition hover:text-white" href="/guides">
+            Guides
+          </a>
+          <a className="transition hover:text-white" href="/safe-use-policy">
+            Safe Use
+          </a>
           <a className="transition hover:text-white" href={normalizePath(`${basePath}/#features`)}>
             {nav.features}
           </a>
@@ -119,6 +126,7 @@ function PageShell({
     <main className="min-h-screen bg-slate-950 text-white">
       <Header language={language} hasLanguagePrefix={hasLanguagePrefix} tool={tool} />
       {children}
+      <SiteFooter languageCode={language} />
     </main>
   );
 }
