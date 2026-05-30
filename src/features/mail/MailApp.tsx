@@ -1163,6 +1163,9 @@ export function MailApp({
             <a className="transition hover:text-brand-600" href={`${basePath}/contact`}>
               {t.footer.contact}
             </a>
+            <a className="transition hover:text-brand-600" href={`${basePath}/tools`}>
+              Tools
+            </a>
           </nav>
         </div>
         <div className="mx-auto mt-6 flex max-w-6xl flex-col gap-2 border-t border-slate-100 pt-6 text-sm text-slate-500 sm:flex-row sm:justify-between">

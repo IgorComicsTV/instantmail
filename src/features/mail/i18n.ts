@@ -165,7 +165,7 @@ const enAbout: SeoSection[] = [
     title: "What Is Instant Mail?",
     paragraphs: [
       "Instant Mail is a free temporary email service that lets you receive emails without using your personal inbox. You can create a disposable email address instantly and use it for verification codes, activation links, sign-up emails, and one-time messages.",
-      "A temporary email address is also known as temp mail, 10 minute mail, disposable email, throwaway email, burner email, trash mail, fake email, anonymous email, or temporary inbox.",
+      "A temporary email address is also known as temp mail, 10 minute mail, disposable email, throwaway email, burner email, trash mail, generated temporary inbox, anonymous email, or temporary inbox.",
     ],
   },
   {
@@ -191,6 +191,34 @@ const enAbout: SeoSection[] = [
     paragraphs: [
       "Temporary email works by generating a disposable address that can receive messages for short-term use. You do not need to create an account, register with personal details, or set up a password.",
       "Copy your Instant Mail address, paste it into the website or app that requires email, and read incoming messages directly inside your temporary inbox.",
+    ],
+  },
+  {
+    title: "When Temporary Email Is Useful",
+    paragraphs: [
+      "Temporary email is useful when the message is short lived and the website does not need long-term access to your real inbox. Common examples include checking a confirmation email, testing a form, downloading a low-risk resource, joining a public forum, or reviewing a newsletter before subscribing with your main address.",
+      "The goal is not to replace your personal email. The goal is to give you a clean buffer for everyday online moments where privacy and spam prevention matter.",
+    ],
+  },
+  {
+    title: "When You Should Not Use Temporary Email",
+    paragraphs: [
+      "Do not use Instant Mail for banking, payment accounts, medical services, private documents, school or work accounts, government services, or anything you may need to recover later.",
+      "Temporary inboxes can expire, domains can be blocked by some websites, and messages may become unavailable depending on provider availability. Important accounts deserve a permanent email address you control.",
+    ],
+  },
+  {
+    title: "Privacy and Safety",
+    paragraphs: [
+      "Instant Mail keeps the experience simple: no account creation, no profile, and no personal password required to generate a temporary inbox. Your current session is stored in your browser so the page can keep showing the same address while you use it.",
+      "Emails can contain suspicious links or attachments. Instant Mail includes a link warning before opening external email links, but you should still avoid entering personal information on sites you do not trust.",
+    ],
+  },
+  {
+    title: "How We Handle Email Providers",
+    paragraphs: [
+      "Instant Mail uses third-party temporary email providers to create inboxes and retrieve messages. The app does not sell provider access, does not ask users to pay for provider usage, and does not store email content on a private Instant Mail server in this MVP.",
+      "Provider availability can change. If a domain is blocked or temporarily unavailable, generate a new address and use the tool only for low-risk tasks.",
     ],
   },
   {
@@ -394,6 +422,14 @@ const content: Record<LanguageCode, LanguageContent> = {
             title: "Temporary inbox data",
             paragraphs: [
               "Messages are requested from the temporary email provider when you open or refresh your inbox. Do not use Instant Mail for sensitive accounts, private documents, banking, payments, or services you need to recover later.",
+              "Instant Mail may use providers such as Mail.tm and Mail.gw to create temporary addresses and retrieve messages. Provider availability, domains, message retention, and delivery behavior can change outside of Instant Mail's control.",
+            ],
+          },
+          {
+            title: "Cookies, analytics, and advertising",
+            paragraphs: [
+              "Instant Mail may use basic analytics and advertising services to understand site performance and support the free tool. If Google ads are enabled, Google and its partners may use cookies, web beacons, IP addresses, or similar technologies as described in Google's publisher policies.",
+              "We do not ask you to create a personal Instant Mail account, and we do not ask for payment details to use the temporary inbox.",
             ],
           },
         ],
@@ -413,6 +449,7 @@ const content: Record<LanguageCode, LanguageContent> = {
             title: "No permanent access",
             paragraphs: [
               "Temporary inboxes are not permanent. Messages, addresses, or access may stop working at any time depending on provider availability and browser session state.",
+              "Use Instant Mail only for legal, low-risk, short-term tasks. Do not use the service to send spam, commit fraud, impersonate others, harass people, bypass platform rules, or handle sensitive accounts.",
             ],
           },
         ],
@@ -440,6 +477,13 @@ const content: Record<LanguageCode, LanguageContent> = {
             paragraphs: [
               "Instant Mail is a free temporary email tool created to help users receive short-term emails, avoid spam, and protect their personal inbox during everyday online sign-ups.",
               "The product is built for quick verifications, test accounts, downloads, and low-risk services where using a personal inbox is unnecessary.",
+              "Instant Mail also offers small privacy and email utilities, including DNS checks, public IP lookup, and local password generation, so users can solve related tasks without creating an account.",
+            ],
+          },
+          {
+            title: "What Instant Mail is not for",
+            paragraphs: [
+              "Instant Mail is not a permanent mailbox, business email provider, account recovery system, or tool for abuse. Important services should always use an email address you own and can recover.",
             ],
           },
         ],
@@ -447,7 +491,44 @@ const content: Record<LanguageCode, LanguageContent> = {
       faq: {
         title: "FAQ",
         description: "Common questions about Instant Mail and temporary email addresses.",
-        sections: enAbout.slice(0, 1),
+        sections: [
+          {
+            title: "What is Instant Mail?",
+            paragraphs: [
+              "Instant Mail is a free temporary email service. It gives you a disposable inbox you can use for sign-ups, verification codes, and short-term online activity without exposing your real email.",
+            ],
+          },
+          {
+            title: "How do I use it?",
+            paragraphs: [
+              "Copy the address, paste it where you need to receive an email, and read incoming messages in the inbox on the page.",
+            ],
+          },
+          {
+            title: "Do I need an account?",
+            paragraphs: [
+              "No. Instant Mail works instantly with no registration, no password, and no personal details required.",
+            ],
+          },
+          {
+            title: "How long does the inbox last?",
+            paragraphs: [
+              "Your session stays available while you keep this page open. You can generate a new address anytime with the change button.",
+            ],
+          },
+          {
+            title: "Is temporary email safe?",
+            paragraphs: [
+              "It is useful for low-risk verification and testing. Do not use it for banking, payments, private documents, or accounts you may need to recover later.",
+            ],
+          },
+          {
+            title: "Can I use Instant Mail for important accounts?",
+            paragraphs: [
+              "No. Use a permanent email address for banking, payments, business accounts, private files, healthcare, school, government services, and anything you may need to recover later.",
+            ],
+          },
+        ],
       },
     },
   },
@@ -458,7 +539,7 @@ const content: Record<LanguageCode, LanguageContent> = {
     name: "Português",
     title: "Email temporário grátis - Email descartável | Instant Mail",
     description:
-      "Crie um email temporário grátis com o Instant Mail. Use email descartável, gerador de email falso e email temporário para verificação sem expor sua caixa principal.",
+      "Crie um email temporário grátis com o Instant Mail. Use email descartável, gerador de email temporário gerado e email temporário para verificação sem expor sua caixa principal.",
     nav: {
       inbox: "Caixa de entrada",
       features: "Recursos",
@@ -621,7 +702,7 @@ const content: Record<LanguageCode, LanguageContent> = {
       {
         title: "O que é email temporário descartável?",
         paragraphs: [
-          "Email temporário é um endereço criado para receber mensagens por pouco tempo sem usar seu email pessoal. Também é conhecido como email descartável, temp mail, email falso, burner email ou caixa temporária.",
+          "Email temporário é um endereço criado para receber mensagens por pouco tempo sem usar seu email pessoal. Também é conhecido como email descartável, temp mail, email temporário gerado, burner email ou caixa temporária.",
           "Com o Instant Mail, você pode criar um email temporário grátis para receber códigos de verificação, links de ativação, mensagens de cadastro e emails únicos.",
         ],
       },
@@ -634,7 +715,7 @@ const content: Record<LanguageCode, LanguageContent> = {
         bullets: [
           "Email temporário para verificação",
           "Email descartável para cadastros",
-          "Gerador de email falso para testes",
+          "Caixa temporária gerada para testes",
           "Proteção contra spam",
           "Uma caixa rápida para links de ativação",
         ],
@@ -673,6 +754,14 @@ const content: Record<LanguageCode, LanguageContent> = {
             title: "Uso responsável",
             paragraphs: [
               "Não use email temporário para bancos, pagamentos, documentos privados ou contas que você precise recuperar depois.",
+              "O Instant Mail pode usar provedores como Mail.tm e Mail.gw para criar endereços temporários e buscar mensagens. Disponibilidade, domínios, retenção e entrega dependem também desses provedores.",
+            ],
+          },
+          {
+            title: "Cookies, métricas e anúncios",
+            paragraphs: [
+              "O Instant Mail pode usar métricas básicas e serviços de publicidade para entender desempenho e manter a ferramenta gratuita. Caso anúncios do Google estejam ativos, terceiros podem usar cookies, web beacons, endereços IP ou tecnologias semelhantes conforme as políticas do Google.",
+              "Não pedimos conta pessoal, dados de pagamento ou senha própria do Instant Mail para usar a caixa temporária.",
             ],
           },
         ],
@@ -692,6 +781,7 @@ const content: Record<LanguageCode, LanguageContent> = {
             title: "Acesso temporário",
             paragraphs: [
               "As caixas temporárias não são permanentes. Endereços e mensagens podem deixar de funcionar dependendo da sessão e da disponibilidade do provedor.",
+              "Use o Instant Mail apenas para atividades legais, temporárias e de baixo risco. Não use o serviço para spam, fraude, abuso, assédio, golpes, violação de regras de plataformas ou contas sensíveis.",
             ],
           },
         ],
@@ -716,6 +806,13 @@ const content: Record<LanguageCode, LanguageContent> = {
             paragraphs: [
               "Instant Mail é uma ferramenta gratuita de email temporário criada para ajudar usuários a receber emails rápidos, evitar spam e proteger a caixa pessoal em cadastros online.",
               "O foco é oferecer uma caixa simples para verificações, testes, downloads e serviços de baixo risco.",
+              "O site também reúne pequenas ferramentas de privacidade e email, como verificação DNS, consulta de IP público e gerador local de senhas.",
+            ],
+          },
+          {
+            title: "Quando não usar",
+            paragraphs: [
+              "O Instant Mail não é uma caixa permanente, provedor de email profissional ou sistema de recuperação de contas. Para bancos, pagamentos, documentos privados, trabalho e serviços importantes, use um email permanente que você controla.",
             ],
           },
         ],
@@ -725,9 +822,33 @@ const content: Record<LanguageCode, LanguageContent> = {
         description: "Perguntas frequentes sobre email temporário e Instant Mail.",
         sections: [
           {
-            title: "FAQ",
+            title: "O que é o Instant Mail?",
             paragraphs: [
-              "Email temporário é útil para cadastros rápidos, códigos de verificação e proteção contra spam. Use seu email real apenas em contas importantes.",
+              "Instant Mail é uma ferramenta gratuita de email temporário para receber códigos, links de ativação e mensagens rápidas sem expor seu email real.",
+            ],
+          },
+          {
+            title: "Como usar?",
+            paragraphs: [
+              "Copie o endereço gerado, cole no site que pediu email e leia as mensagens recebidas diretamente na caixa da página.",
+            ],
+          },
+          {
+            title: "Preciso criar conta?",
+            paragraphs: [
+              "Não. O Instant Mail funciona sem cadastro, senha ou dados pessoais.",
+            ],
+          },
+          {
+            title: "O email temporário é seguro?",
+            paragraphs: [
+              "Ele é útil para verificações e testes de baixo risco. Não use em bancos, pagamentos, documentos privados ou contas que você precise recuperar depois.",
+            ],
+          },
+          {
+            title: "Posso usar em contas importantes?",
+            paragraphs: [
+              "Não. Use email permanente em bancos, pagamentos, documentos privados, contas profissionais, escola, governo e qualquer serviço que você precise recuperar no futuro.",
             ],
           },
         ],
@@ -900,7 +1021,7 @@ content.es.aboutSections = [
     title: "¿Qué es un correo temporal desechable?",
     paragraphs: [
       "Un correo temporal es una dirección creada para recibir mensajes durante poco tiempo sin usar tu correo personal.",
-      "También se conoce como temp mail, correo desechable, correo falso, burner email o bandeja temporal.",
+      "También se conoce como temp mail, correo desechable, bandeja temporal, burner email o bandeja temporal.",
     ],
   },
   {
@@ -927,6 +1048,58 @@ content.es.trustPages = buildTrustPages(content.es, {
     "Instant Mail es una herramienta gratuita para correo temporal, pruebas y verificaciones de bajo riesgo. No la uses para abuso, fraude o actividades ilegales.",
   contact: "Para dudas, feedback o reportes de abuso, escribe a contact@instantmail.online.",
 });
+content.es.trustPages.privacy.sections = [
+  {
+    title: "Política de Privacidad",
+    paragraphs: [
+      "Instant Mail está diseñado para uso temporal y de bajo riesgo. La sesión del correo se guarda localmente en tu navegador para que puedas seguir usando la misma dirección mientras la página está abierta.",
+      "No pedimos nombre, contraseña, datos de pago ni una cuenta personal de Instant Mail para crear una bandeja temporal.",
+    ],
+  },
+  {
+    title: "Proveedores y mensajes",
+    paragraphs: [
+      "Instant Mail puede usar proveedores como Mail.tm y Mail.gw para crear direcciones temporales y consultar mensajes. La disponibilidad, los dominios, la retención y la entrega también dependen de esos proveedores.",
+      "No uses correo temporal para bancos, pagos, documentos privados, cuentas de trabajo o servicios que necesites recuperar más adelante.",
+    ],
+  },
+  {
+    title: "Cookies, analítica y anuncios",
+    paragraphs: [
+      "Instant Mail puede usar métricas básicas y servicios de publicidad para mejorar el sitio y mantener la herramienta gratuita. Si los anuncios de Google están activos, terceros pueden usar cookies, web beacons, direcciones IP o tecnologías similares según las políticas de Google.",
+    ],
+  },
+];
+content.es.trustPages.terms.sections = [
+  {
+    title: "Términos de Uso",
+    paragraphs: [
+      "Instant Mail es una herramienta gratuita para correo temporal, pruebas legítimas y verificaciones de bajo riesgo.",
+      "No uses el servicio para actividades ilegales, spam, fraude, abuso, acoso, suplantación o cuentas sensibles.",
+    ],
+  },
+  {
+    title: "Acceso temporal",
+    paragraphs: [
+      "Las bandejas temporales no son permanentes. Las direcciones, mensajes o el acceso pueden dejar de funcionar por disponibilidad del proveedor o por el estado de la sesión del navegador.",
+    ],
+  },
+];
+content.es.trustPages.about.sections = [
+  {
+    title: "Acerca de Instant Mail",
+    paragraphs: [
+      "Instant Mail ayuda a recibir mensajes de corto plazo, evitar spam y proteger la bandeja personal durante registros online cotidianos.",
+      "El sitio también ofrece herramientas simples de privacidad y email, como verificación DNS, consulta de IP pública y generación local de contraseñas.",
+    ],
+  },
+  {
+    title: "Límites de uso",
+    paragraphs: [
+      "Instant Mail no es una bandeja permanente ni un sistema de recuperación de cuentas. Para servicios importantes, usa un correo permanente que controles.",
+    ],
+  },
+];
 
 content.fr = {
   ...content.en,
@@ -1056,6 +1229,58 @@ content.fr.trustPages = buildTrustPages(content.fr, {
     "Instant Mail est fourni pour un usage temporaire, légal et à faible risque. Ne l'utilisez pas pour l'abus, la fraude ou les activités illégales.",
   contact: "Pour les questions, retours ou signalements, contactez contact@instantmail.online.",
 });
+content.fr.trustPages.privacy.sections = [
+  {
+    title: "Politique de confidentialité",
+    paragraphs: [
+      "Instant Mail est conçu pour un usage temporaire et à faible risque. La session email est conservée localement dans votre navigateur afin de garder la même adresse pendant votre utilisation.",
+      "Nous ne demandons pas de nom, mot de passe, paiement ou compte personnel Instant Mail pour créer une boîte temporaire.",
+    ],
+  },
+  {
+    title: "Fournisseurs et messages",
+    paragraphs: [
+      "Instant Mail peut utiliser des fournisseurs comme Mail.tm et Mail.gw pour créer des adresses temporaires et récupérer les messages. La disponibilité, les domaines, la conservation et la livraison dépendent aussi de ces fournisseurs.",
+      "N'utilisez pas l'email temporaire pour la banque, les paiements, les documents privés, les comptes professionnels ou les services que vous devrez récupérer plus tard.",
+    ],
+  },
+  {
+    title: "Cookies, mesures et publicité",
+    paragraphs: [
+      "Instant Mail peut utiliser des mesures basiques et des services publicitaires pour améliorer le site et soutenir l'outil gratuit. Si les annonces Google sont activées, des tiers peuvent utiliser cookies, balises web, adresses IP ou technologies similaires selon les politiques de Google.",
+    ],
+  },
+];
+content.fr.trustPages.terms.sections = [
+  {
+    title: "Conditions d'utilisation",
+    paragraphs: [
+      "Instant Mail est fourni pour l'email temporaire, les tests légitimes et les vérifications à faible risque.",
+      "N'utilisez pas le service pour des activités illégales, spam, fraude, abus, harcèlement, usurpation ou comptes sensibles.",
+    ],
+  },
+  {
+    title: "Accès temporaire",
+    paragraphs: [
+      "Les boîtes temporaires ne sont pas permanentes. Les adresses, messages ou accès peuvent cesser de fonctionner selon la disponibilité du fournisseur et l'état de la session du navigateur.",
+    ],
+  },
+];
+content.fr.trustPages.about.sections = [
+  {
+    title: "À propos d'Instant Mail",
+    paragraphs: [
+      "Instant Mail aide les utilisateurs à recevoir des emails de courte durée, éviter le spam et protéger leur boîte personnelle lors des inscriptions en ligne.",
+      "Le site propose aussi de petits outils de confidentialité et d'email, comme la vérification DNS, l'affichage de l'IP publique et la génération locale de mots de passe.",
+    ],
+  },
+  {
+    title: "Limites d'utilisation",
+    paragraphs: [
+      "Instant Mail n'est pas une boîte permanente, ni un système de récupération de compte. Pour les services importants, utilisez une adresse email permanente que vous contrôlez.",
+    ],
+  },
+];
 
 content.de = {
   ...content.fr,
