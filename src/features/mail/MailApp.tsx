@@ -598,7 +598,7 @@ export function MailApp({
       document.body.appendChild(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(url);
+      window.setTimeout(() => URL.revokeObjectURL(url), 30000);
 
       setAttachmentStatus((currentStatus) => ({
         ...currentStatus,

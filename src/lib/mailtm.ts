@@ -480,7 +480,63 @@ export async function downloadAttachment(
     throw new Error(`Could not download attachment. Status ${response.status}.`);
   }
 
+  if (providerId === CATCHMAIL_PROVIDER_ID) {
+    return readCatchMailAttachmentResponse(response, attachment);
+  }
+
   return response.blob();
+}
+
+async function readCatchMailAttachmentResponse(
+  response: Response,
+  attachment: MailAttachment,
+): Promise<Blob> {
+  const contentType = response.headers.get("content-type") || "";
+
+  if (!contentType.toLowerCase().includes("application/json")) {
+    return response.blob();
+  }
+
+  const payload = (await response.json()) as {
+    content?: string;
+    data?: string;
+    body?: string;
+    base64?: string;
+    encoding?: string;
+    error?: { message?: string };
+    message?: string;
+  };
+
+  const encodedContent = payload.content || payload.data || payload.body || payload.base64;
+
+  if (!encodedContent) {
+    throw new Error(
+      payload.error?.message ||
+      payload.message ||
+      "The attachment response did not include downloadable file data.",
+    );
+  }
+
+  const isBase64 = !payload.encoding || payload.encoding.toLowerCase() === "base64";
+  const bytes = isBase64
+    ? decodeBase64ToBytes(encodedContent)
+    : new TextEncoder().encode(encodedContent);
+
+  return new Blob([bytes], {
+    type: attachment.contentType || contentType || "application/octet-stream",
+  });
+}
+
+function decodeBase64ToBytes(value: string): Uint8Array {
+  const normalized = value.includes(",") ? value.split(",").pop() || "" : value;
+  const binary = atob(normalized.replace(/\s/g, ""));
+  const bytes = new Uint8Array(binary.length);
+
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return bytes;
 }
 
 function parseCatchMailSender(value: string | undefined): { address: string; name: string } {
