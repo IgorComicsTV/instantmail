@@ -5,7 +5,7 @@ import UserRound from "lucide-react/dist/esm/icons/user-round.js";
 import Zap from "lucide-react/dist/esm/icons/zap.js";
 
 export type LanguageCode = "en" | "pt" | "es" | "fr" | "de" | "id" | "hi";
-export type TrustPageKey = "privacy" | "terms" | "contact" | "about" | "faq";
+export type TrustPageKey = "privacy" | "terms" | "contact" | "about" | "faq" | "safe-use-policy";
 
 export type SeoSection = {
   title: string;
@@ -419,6 +419,13 @@ const content: Record<LanguageCode, LanguageContent> = {
             ],
           },
           {
+            title: "What data may be processed",
+            paragraphs: [
+              "The app may process the temporary email address generated for your session, inbox message metadata, message content requested from the provider, attachment metadata, browser storage values needed to keep the current session working, and basic site performance or analytics data.",
+              "Instant Mail does not require a personal account and does not ask you to upload identity documents, payment cards, or private profile information.",
+            ],
+          },
+          {
             title: "Temporary inbox data",
             paragraphs: [
               "Messages are requested from the temporary email provider when you open or refresh your inbox. Do not use Instant Mail for sensitive accounts, private documents, banking, payments, or services you need to recover later.",
@@ -426,10 +433,23 @@ const content: Record<LanguageCode, LanguageContent> = {
             ],
           },
           {
+            title: "Local storage",
+            paragraphs: [
+              "Instant Mail uses browser local storage to remember the current temporary address, token, provider, read messages, and refresh timing for the active session. This keeps the page usable after a reload without creating an Instant Mail account.",
+              "You can clear this data by deleting the address in the app or clearing your browser site data.",
+            ],
+          },
+          {
             title: "Cookies, analytics, and advertising",
             paragraphs: [
               "Instant Mail may use basic analytics and advertising services to understand site performance and support the free tool. If Google ads are enabled, Google and its partners may use cookies, web beacons, IP addresses, or similar technologies as described in Google's publisher policies.",
               "We do not ask you to create a personal Instant Mail account, and we do not ask for payment details to use the temporary inbox.",
+            ],
+          },
+          {
+            title: "Contact",
+            paragraphs: [
+              "For privacy questions, feedback, or abuse reports, contact: contact@instantmail.online.",
             ],
           },
         ],
@@ -446,10 +466,29 @@ const content: Record<LanguageCode, LanguageContent> = {
             ],
           },
           {
+            title: "Acceptable use",
+            paragraphs: [
+              "Acceptable uses include privacy protection, spam prevention, developer testing, temporary verification, and receiving short-term messages for low-risk online activity.",
+              "You are responsible for how you use the temporary address and for following the rules of third-party websites where you enter it.",
+            ],
+          },
+          {
+            title: "Prohibited use",
+            paragraphs: [
+              "You may not use Instant Mail for phishing, impersonation, harassment, fraud, spam, mass account creation, abuse of third-party platforms, or activity that violates applicable laws.",
+            ],
+          },
+          {
             title: "No permanent access",
             paragraphs: [
               "Temporary inboxes are not permanent. Messages, addresses, or access may stop working at any time depending on provider availability and browser session state.",
               "Use Instant Mail only for legal, low-risk, short-term tasks. Do not use the service to send spam, commit fraud, impersonate others, harass people, bypass platform rules, or handle sensitive accounts.",
+            ],
+          },
+          {
+            title: "Third-party providers",
+            paragraphs: [
+              "Instant Mail relies on third-party temporary email providers for address creation and message retrieval. Provider downtime, domain changes, retention limits, delivery delays, or blocked domains may affect the service.",
             ],
           },
         ],
@@ -463,6 +502,7 @@ const content: Record<LanguageCode, LanguageContent> = {
             paragraphs: [
               "For questions, feedback, abuse reports, or product issues, contact the Instant Mail team by email.",
               "Email: contact@instantmail.online",
+              "Please include the page URL, a short description of the issue, and any relevant technical details. Do not send passwords, verification codes, private documents, or sensitive personal data.",
             ],
           },
         ],
@@ -476,8 +516,14 @@ const content: Record<LanguageCode, LanguageContent> = {
             title: "About Instant Mail",
             paragraphs: [
               "Instant Mail is a free temporary email tool created to help users receive short-term emails, avoid spam, and protect their personal inbox during everyday online sign-ups.",
-              "The product is built for quick verifications, test accounts, downloads, and low-risk services where using a personal inbox is unnecessary.",
+              "The product is built for quick verifications, developer testing, downloads, and low-risk services where using a personal inbox is unnecessary.",
               "Instant Mail also offers small privacy and email utilities, including DNS checks, public IP lookup, and local password generation, so users can solve related tasks without creating an account.",
+            ],
+          },
+          {
+            title: "Who maintains Instant Mail?",
+            paragraphs: [
+              "Instant Mail is maintained as an independent privacy and email utility project by Igor Corrêa. The goal is to keep the tool simple, understandable, and useful without asking users to create another account.",
             ],
           },
           {
@@ -526,6 +572,41 @@ const content: Record<LanguageCode, LanguageContent> = {
             title: "Can I use Instant Mail for important accounts?",
             paragraphs: [
               "No. Use a permanent email address for banking, payments, business accounts, private files, healthcare, school, government services, and anything you may need to recover later.",
+            ],
+          },
+        ],
+      },
+      "safe-use-policy": {
+        title: "Safe Use Policy",
+        description:
+          "How Instant Mail should be used responsibly for privacy, spam prevention, testing, and short-term verification.",
+        sections: [
+          {
+            title: "Allowed uses",
+            paragraphs: [
+              "Instant Mail is built for legitimate privacy and email utility tasks. The service helps people receive short-term messages without exposing their personal inbox to every website they visit.",
+              "Appropriate uses include privacy protection, spam prevention, developer testing, temporary email verification, safe browsing, and checking low-risk sign-up messages.",
+            ],
+          },
+          {
+            title: "Prohibited uses",
+            paragraphs: [
+              "Instant Mail must not be used for fraud, spam, phishing, harassment, impersonation, abuse, violating third-party rules, or mass account creation.",
+              "Do not use temporary inboxes to mislead others, avoid accountability, attack services, collect private information, or interfere with another platform's safety systems.",
+            ],
+          },
+          {
+            title: "Important account guidance",
+            paragraphs: [
+              "Temporary email is not suitable for banking, payment accounts, government services, healthcare portals, school or work accounts, private documents, or any account you may need to recover later.",
+              "If an account matters, use a permanent email address you control and protect it with a strong password and two-factor authentication.",
+            ],
+          },
+          {
+            title: "Abuse reports",
+            paragraphs: [
+              "If you believe Instant Mail is being used in a harmful way, contact us with details so the issue can be reviewed.",
+              "Email: contact@instantmail.online",
             ],
           },
         ],
@@ -850,6 +931,35 @@ const content: Record<LanguageCode, LanguageContent> = {
             paragraphs: [
               "Não. Use email permanente em bancos, pagamentos, documentos privados, contas profissionais, escola, governo e qualquer serviço que você precise recuperar no futuro.",
             ],
+          },
+        ],
+      },
+      "safe-use-policy": {
+        title: "Política de Uso Seguro",
+        description:
+          "Orientações para usar o Instant Mail de forma responsável, segura e legítima.",
+        sections: [
+          {
+            title: "Usos permitidos",
+            paragraphs: [
+              "O Instant Mail deve ser usado para proteção de privacidade, prevenção de spam, testes de desenvolvimento, verificações temporárias, navegação mais segura e mensagens de baixo risco.",
+            ],
+          },
+          {
+            title: "Usos proibidos",
+            paragraphs: [
+              "Não use o Instant Mail para fraude, spam, phishing, assédio, falsificação de identidade, abuso, violação de regras de terceiros ou criação massiva de contas.",
+            ],
+          },
+          {
+            title: "Contas importantes",
+            paragraphs: [
+              "Não use email temporário para bancos, pagamentos, governo, saúde, escola, trabalho, documentos privados ou qualquer conta que você precise recuperar depois.",
+            ],
+          },
+          {
+            title: "Relatos de abuso",
+            paragraphs: ["Email: contact@instantmail.online"],
           },
         ],
       },
@@ -1695,6 +1805,35 @@ function buildTrustPages(
         paragraphs: [faq.answer],
       })),
     },
+    "safe-use-policy": {
+      title: "Safe Use Policy",
+      description:
+        "Responsible use guidance for Instant Mail temporary inboxes and privacy tools.",
+      sections: [
+        {
+          title: "Allowed uses",
+          paragraphs: [
+            "Instant Mail is intended for privacy protection, spam prevention, developer testing, temporary email verification, safe browsing, and low-risk sign-up messages.",
+          ],
+        },
+        {
+          title: "Prohibited uses",
+          paragraphs: [
+            "Do not use Instant Mail for fraud, spam, phishing, harassment, impersonation, abuse, violating third-party rules, or mass account creation.",
+          ],
+        },
+        {
+          title: "Important account guidance",
+          paragraphs: [
+            "Do not use temporary inboxes for banking, payment accounts, government services, private documents, work or school accounts, or anything you may need to recover later.",
+          ],
+        },
+        {
+          title: "Abuse reports",
+          paragraphs: ["Email: contact@instantmail.online"],
+        },
+      ],
+    },
   };
 }
 
@@ -1971,5 +2110,12 @@ export function isLanguageCode(value: string | undefined): value is LanguageCode
 }
 
 export function isTrustPageKey(value: string | undefined): value is TrustPageKey {
-  return value === "privacy" || value === "terms" || value === "contact" || value === "about" || value === "faq";
+  return (
+    value === "privacy" ||
+    value === "terms" ||
+    value === "contact" ||
+    value === "about" ||
+    value === "faq" ||
+    value === "safe-use-policy"
+  );
 }

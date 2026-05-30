@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { LanguageMenu } from "./components/ui/LanguageMenu";
+import { SiteFooter } from "./components/ui/SiteFooter";
 import { SiteLogo } from "./components/ui/SiteLogo";
 import { ToolsMenu } from "./components/ui/ToolsMenu";
+import { GuidesApp } from "./features/guides/GuidesApp";
+import { getGuide, guidesHub, isGuideSlug, type GuideSlug } from "./features/guides/guidesContent";
 import { MailApp } from "./features/mail/MailApp";
 import { ToolsApp } from "./features/tools/ToolsApp";
 import {
@@ -28,6 +31,7 @@ type RouteState = {
   hasLanguagePrefix: boolean;
   page: TrustPageKey | "tenMinute" | SeoToolSlug | null;
   toolsPage: "hub" | StandaloneToolSlug | null;
+  guidesPage: "hub" | GuideSlug | null;
   isFallbackRoute: boolean;
 };
 
@@ -47,6 +51,7 @@ function readRoute(): RouteState {
   const pageSegment = hasLanguagePrefix ? second : first;
   const toolSegment = hasLanguagePrefix ? third : second;
   const isToolsRoute = pageSegment === "tools";
+  const isGuidesRoute = pageSegment === "guides";
   const toolsPage =
     isToolsRoute
       ? toolSegment
@@ -55,8 +60,16 @@ function readRoute(): RouteState {
           : null
         : "hub"
       : null;
+  const guidesPage =
+    isGuidesRoute
+      ? toolSegment
+        ? isGuideSlug(toolSegment)
+          ? toolSegment
+          : null
+        : "hub"
+      : null;
   const page =
-    isToolsRoute
+    isToolsRoute || isGuidesRoute
       ? null
       : pageSegment === tenMinuteSlug
       ? "tenMinute"
@@ -68,12 +81,13 @@ function readRoute(): RouteState {
   const isKnownPage =
     !pageSegment ||
     !!toolsPage ||
+    !!guidesPage ||
     pageSegment === tenMinuteSlug ||
     isSeoToolSlug(pageSegment) ||
     isTrustPageKey(pageSegment);
   const isFallbackRoute = !!pageSegment && !isKnownPage;
 
-  return { language, hasLanguagePrefix, page, toolsPage, isFallbackRoute };
+  return { language, hasLanguagePrefix, page, toolsPage, guidesPage, isFallbackRoute };
 }
 
 function setMeta(name: string, value: string) {
@@ -126,10 +140,24 @@ function clearAlternateLinks() {
     .forEach((element) => element.remove());
 }
 
+function setJsonLd(id: string, value: unknown) {
+  let element = document.querySelector<HTMLScriptElement>(`script#${id}`);
+
+  if (!element) {
+    element = document.createElement("script");
+    element.id = id;
+    element.type = "application/ld+json";
+    document.head.appendChild(element);
+  }
+
+  element.textContent = JSON.stringify(value);
+}
+
 function isAdsenseIndexableRoute(
   code: LanguageCode,
   page: RouteState["page"],
   toolsPage: RouteState["toolsPage"],
+  guidesPage: RouteState["guidesPage"],
   hasLanguagePrefix: boolean,
   isFallbackRoute: boolean,
 ) {
@@ -141,8 +169,16 @@ function isAdsenseIndexableRoute(
     return !hasLanguagePrefix;
   }
 
+  if (guidesPage) {
+    return !hasLanguagePrefix;
+  }
+
   if (!page) {
     return hasLanguagePrefix && ADSENSE_INDEX_LANGUAGES.includes(code);
+  }
+
+  if (page === "safe-use-policy") {
+    return code === "en" && !hasLanguagePrefix;
   }
 
   if (isTrustPageKey(page)) {
@@ -156,8 +192,12 @@ function isAdsenseIndexableRoute(
   return code === "en" && ADSENSE_INDEX_EMAIL_TOOLS.includes(page);
 }
 
-function getSeoAlternateCodes(page: RouteState["page"], toolsPage: RouteState["toolsPage"]) {
-  if (toolsPage) {
+function getSeoAlternateCodes(
+  page: RouteState["page"],
+  toolsPage: RouteState["toolsPage"],
+  guidesPage: RouteState["guidesPage"],
+) {
+  if (toolsPage || guidesPage || page === "safe-use-policy") {
     return [] as LanguageCode[];
   }
 
@@ -172,6 +212,7 @@ function useSeo(
   content: LanguageContent,
   page: RouteState["page"],
   toolsPage: RouteState["toolsPage"],
+  guidesPage: RouteState["guidesPage"],
   hasLanguagePrefix: boolean,
   isFallbackRoute: boolean,
 ) {
@@ -181,8 +222,10 @@ function useSeo(
     const tenMinutePage = page === "tenMinute" ? tenMinuteContent[content.code] : null;
     const standaloneTool = toolsPage && toolsPage !== "hub" ? getStandaloneToolCopy(content.code, toolsPage) : null;
     const toolsHub = toolsPage === "hub" ? toolsContent[content.code] : null;
-    const title = standaloneTool?.title ?? toolsHub?.title ?? tenMinutePage?.title ?? toolPage?.title ?? (trustPage ? `${trustPage.title} | Instant Mail` : content.title);
-    const description = standaloneTool?.description ?? toolsHub?.description ?? tenMinutePage?.description ?? toolPage?.description ?? trustPage?.description ?? content.description;
+    const guidePage = guidesPage && guidesPage !== "hub" ? getGuide(guidesPage) : null;
+    const guideHub = guidesPage === "hub" ? guidesHub : null;
+    const title = guidePage ? `${guidePage.title} | Instant Mail Guides` : guideHub?.title ?? standaloneTool?.title ?? toolsHub?.title ?? tenMinutePage?.title ?? toolPage?.title ?? (trustPage ? `${trustPage.title} | Instant Mail` : content.title);
+    const description = guidePage?.description ?? guideHub?.description ?? standaloneTool?.description ?? toolsHub?.description ?? tenMinutePage?.description ?? toolPage?.description ?? trustPage?.description ?? content.description;
     const toolsPath = toolsPage === "hub"
       ? hasLanguagePrefix
         ? `/${content.code}/tools`
@@ -192,16 +235,19 @@ function useSeo(
           ? `/${content.code}/tools/${toolsPage}`
           : `/tools/${toolsPage}`
         : null;
-    const path = toolsPath ?? (page === "tenMinute"
+    const guidesPath = guidesPage === "hub" ? "/guides" : guidesPage ? `/guides/${guidesPage}` : null;
+    const trustPath = page === "safe-use-policy" ? "/safe-use-policy" : null;
+    const path = guidesPath ?? toolsPath ?? (page === "tenMinute"
       ? `/${content.code}/${tenMinuteSlug}`
       : page
-        ? `/${content.code}/${page}`
+        ? trustPath ?? `/${content.code}/${page}`
         : `/${content.code}/`);
     const canonical = `${CANONICAL_ORIGIN}${path}`;
     const isIndexable = isAdsenseIndexableRoute(
       content.code,
       page,
       toolsPage,
+      guidesPage,
       hasLanguagePrefix,
       isFallbackRoute,
     );
@@ -217,8 +263,109 @@ function useSeo(
     setMeta("twitter:description", description);
     setLink("canonical", canonical);
 
+    const jsonLd: unknown[] = [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "Instant Mail",
+        url: CANONICAL_ORIGIN,
+        logo: `${CANONICAL_ORIGIN}/instant-mail-icon.png`,
+        contactPoint: {
+          "@type": "ContactPoint",
+          email: "contact@instantmail.online",
+          contactType: "customer support",
+        },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "Instant Mail",
+        url: CANONICAL_ORIGIN,
+        description: languages.en.description,
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: `${CANONICAL_ORIGIN}/en/`,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: guideHub ? "Guides" : guidePage ? "Guides" : toolsHub ? "Tools" : standaloneTool ? "Tools" : trustPage?.title ?? title,
+            item: guideHub || guidePage
+              ? `${CANONICAL_ORIGIN}/guides`
+              : toolsHub || standaloneTool
+                ? `${CANONICAL_ORIGIN}/tools`
+                : canonical,
+          },
+          ...(guidePage
+            ? [{
+                "@type": "ListItem",
+                position: 3,
+                name: guidePage.title,
+                item: canonical,
+              }]
+            : standaloneTool
+              ? [{
+                  "@type": "ListItem",
+                  position: 3,
+                  name: standaloneTool.h1,
+                  item: canonical,
+                }]
+              : []),
+        ],
+      },
+    ];
+
+    if (guidePage) {
+      jsonLd.push({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: guidePage.title,
+        description: guidePage.description,
+        image: `${CANONICAL_ORIGIN}${guidePage.image}`,
+        author: {
+          "@type": "Person",
+          name: guidePage.author,
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "Instant Mail",
+          logo: {
+            "@type": "ImageObject",
+            url: `${CANONICAL_ORIGIN}/instant-mail-icon.png`,
+          },
+        },
+        dateModified: "2026-05-30",
+        datePublished: "2026-05-30",
+        mainEntityOfPage: canonical,
+      });
+    }
+
+    if (page === "faq") {
+      jsonLd.push({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: content.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      });
+    }
+
+    setJsonLd("instantmail-dynamic-schema", jsonLd);
+
     clearAlternateLinks();
-    getSeoAlternateCodes(page, toolsPage).forEach((code) => {
+    getSeoAlternateCodes(page, toolsPage, guidesPage).forEach((code) => {
       const alternatePath = toolsPage === "hub"
         ? `/${code}/tools`
         : toolsPage
@@ -232,7 +379,13 @@ function useSeo(
     });
     setLink(
       "alternate",
-      toolsPage === "hub"
+      guidesPage === "hub"
+        ? `${CANONICAL_ORIGIN}/guides`
+        : guidesPage
+          ? `${CANONICAL_ORIGIN}/guides/${guidesPage}`
+      : page === "safe-use-policy"
+        ? `${CANONICAL_ORIGIN}/safe-use-policy`
+      : toolsPage === "hub"
         ? `${CANONICAL_ORIGIN}/tools`
         : toolsPage
           ? `${CANONICAL_ORIGIN}/tools/${toolsPage}`
@@ -243,7 +396,7 @@ function useSeo(
         : `${CANONICAL_ORIGIN}/en/`,
       "x-default",
     );
-  }, [content, hasLanguagePrefix, isFallbackRoute, page, toolsPage]);
+  }, [content, guidesPage, hasLanguagePrefix, isFallbackRoute, page, toolsPage]);
 }
 
 function TrustPage({
@@ -282,8 +435,14 @@ function TrustPage({
             <a className="transition hover:text-brand-600" href={`${basePath}/contact`}>
               {content.footer.contact}
             </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/tools`}>
-              Tools
+          <a className="transition hover:text-brand-600" href={`${basePath}/tools`}>
+            Tools
+          </a>
+            <a className="transition hover:text-brand-600" href="/guides">
+              Guides
+            </a>
+            <a className="transition hover:text-brand-600" href="/safe-use-policy">
+              Safe Use
             </a>
           </nav>
           <div className="flex items-center gap-2">
@@ -331,28 +490,7 @@ function TrustPage({
         </div>
       </section>
 
-      <footer className="border-t border-slate-200 bg-white px-4 py-8 sm:px-6">
-        <div className="mx-auto flex max-w-6xl flex-wrap gap-5 text-sm font-medium text-slate-600">
-          <a className="hover:text-brand-600" href={`${basePath}/privacy`}>
-            {content.footer.privacy}
-          </a>
-          <a className="hover:text-brand-600" href={`${basePath}/terms`}>
-            {content.footer.terms}
-          </a>
-          <a className="hover:text-brand-600" href={`${basePath}/contact`}>
-            {content.footer.contact}
-          </a>
-          <a className="hover:text-brand-600" href={`${basePath}/about`}>
-            {content.footer.about}
-          </a>
-          <a className="hover:text-brand-600" href={`${basePath}/faq`}>
-            {content.footer.faq}
-          </a>
-          <a className="hover:text-brand-600" href={`${basePath}/tools`}>
-            Tools
-          </a>
-        </div>
-      </footer>
+      <SiteFooter languageCode={content.code} />
     </main>
   );
 }
@@ -399,13 +537,16 @@ export function App() {
     content,
     route.page,
     route.toolsPage,
+    route.guidesPage,
     route.hasLanguagePrefix,
     route.isFallbackRoute,
   );
 
   return (
     <>
-      {route.toolsPage ? (
+      {route.guidesPage ? (
+        <GuidesApp guide={route.guidesPage === "hub" ? null : route.guidesPage} />
+      ) : route.toolsPage ? (
         <ToolsApp
           language={route.language}
           tool={route.toolsPage === "hub" ? null : route.toolsPage}

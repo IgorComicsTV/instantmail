@@ -28,6 +28,7 @@ import {
   type MailMessageSummary,
 } from "../../lib/mailtm";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
+import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
 import { ToolsMenu } from "../../components/ui/ToolsMenu";
 import { type LanguageCode, type LanguageContent, type TenMinuteContent } from "./i18n";
@@ -597,7 +598,7 @@ export function MailApp({
       document.body.appendChild(link);
       link.click();
       link.remove();
-      URL.revokeObjectURL(url);
+      window.setTimeout(() => URL.revokeObjectURL(url), 30000);
 
       setAttachmentStatus((currentStatus) => ({
         ...currentStatus,
@@ -776,6 +777,12 @@ export function MailApp({
             </a>
             <a className="transition hover:text-brand-600" href={`${basePath}/tools`}>
               Tools
+            </a>
+            <a className="transition hover:text-brand-600" href="/guides">
+              Guides
+            </a>
+            <a className="transition hover:text-brand-600" href="/safe-use-policy">
+              Safe Use
             </a>
           </nav>
           <div className="flex items-center gap-2">
@@ -1135,55 +1142,7 @@ export function MailApp({
         </div>
       </section>
 
-      <footer className="border-t border-slate-200 bg-white px-4 py-10 sm:px-6">
-        <div className="mx-auto flex max-w-6xl flex-col justify-between gap-6 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-2.5">
-            <SiteLogo className="h-8 w-8" size={32} />
-            <span className="font-bold text-slate-900">Instant Mail</span>
-          </div>
-          <nav className="flex flex-wrap gap-6 text-sm font-medium text-slate-600">
-            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#inbox`}>
-              {t.nav.inbox}
-            </a>
-            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#features`}>
-              {t.nav.features}
-            </a>
-            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#faq`}>
-              {t.nav.faq}
-            </a>
-            <a className="transition hover:text-brand-600" href={`${anchorBasePath}#about`}>
-              {t.nav.about}
-            </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/privacy`}>
-              {t.footer.privacy}
-            </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/terms`}>
-              {t.footer.terms}
-            </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/contact`}>
-              {t.footer.contact}
-            </a>
-            <a className="transition hover:text-brand-600" href={`${basePath}/tools`}>
-              Tools
-            </a>
-          </nav>
-        </div>
-        <div className="mx-auto mt-6 flex max-w-6xl flex-col gap-2 border-t border-slate-100 pt-6 text-sm text-slate-500 sm:flex-row sm:justify-between">
-          <p>{t.footer.copyright}</p>
-          <p>
-            {t.footer.poweredPrefix}{" "}
-            <a
-              className="font-semibold text-brand-600 hover:text-brand-700"
-              href="https://mail.tm/"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Mail.tm / Mail.gw
-            </a>{" "}
-            {t.footer.poweredSuffix}
-          </p>
-        </div>
-      </footer>
+      <SiteFooter languageCode={t.code} showProviderNote />
 
       {messageModalState !== "closed" && activeMessageSummary ? (
         <div
