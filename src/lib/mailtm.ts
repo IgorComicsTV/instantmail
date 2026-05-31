@@ -1,3 +1,5 @@
+import { validateDownloadedAttachment } from "./attachmentValidation";
+
 export type MailProviderId = "mailtm" | "mailgw";
 
 const PROVIDERS: Record<MailProviderId, { baseUrl: string; label: string }> = {
@@ -309,7 +311,10 @@ export async function downloadAttachment(
     throw new Error("This attachment does not include a download URL.");
   }
 
-  const response = await fetch(`${PROVIDERS[providerId].baseUrl}${attachment.downloadUrl}`, {
+  const attachmentUrl = attachment.downloadUrl.startsWith("http")
+    ? attachment.downloadUrl
+    : `${PROVIDERS[providerId].baseUrl}${attachment.downloadUrl}`;
+  const response = await fetch(attachmentUrl, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -319,7 +324,10 @@ export async function downloadAttachment(
     throw new Error(`Could not download attachment. Status ${response.status}.`);
   }
 
-  return response.blob();
+  return validateDownloadedAttachment(
+    await response.blob(),
+    attachment.contentType || response.headers.get("content-type") || "application/octet-stream",
+  );
 }
 
 export function makeAddress(domain: string): string {

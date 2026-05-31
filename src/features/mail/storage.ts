@@ -28,6 +28,10 @@ export function loadSession(storageKey = STORAGE_KEY): MailSession | null {
       return null;
     }
 
+    if (session.address.endsWith("@catchmail.io")) {
+      return null;
+    }
+
     return {
       providerId: "mailtm",
       ...session,
