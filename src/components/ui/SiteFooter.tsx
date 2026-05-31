@@ -62,12 +62,8 @@ export function SiteFooter({ languageCode = "en", showProviderNote = true }: Sit
               Temporary inboxes are powered by third-party providers including{" "}
               <a className="font-semibold text-slate-700 hover:text-blue-700" href="https://mail.tm/" rel="noreferrer" target="_blank">
                 Mail.tm
-              </a>
-              , Mail.gw, and{" "}
-              <a className="font-semibold text-slate-700 hover:text-blue-700" href="https://catchmail.io/" rel="noreferrer" target="_blank">
-                CatchMail
-              </a>
-              . Instant Mail does not sell provider access.
+              </a>{" "}
+              and Mail.gw. Instant Mail does not sell provider access.
             </p>
           ) : null}
         </div>
