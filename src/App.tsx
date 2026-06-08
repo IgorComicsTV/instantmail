@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { LanguageMenu } from "./components/ui/LanguageMenu";
 import { SiteFooter } from "./components/ui/SiteFooter";
 import { SiteLogo } from "./components/ui/SiteLogo";
@@ -576,6 +577,7 @@ export function App() {
         <MailApp content={content} basePath={`/${content.code}`} />
       )}
       <Analytics />
+      <SpeedInsights />
     </>
   );
 }
