@@ -2,6 +2,7 @@ import ArrowRight from "lucide-react/dist/esm/icons/arrow-right.js";
 import BookOpen from "lucide-react/dist/esm/icons/book-open.js";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days.js";
 import Clock3 from "lucide-react/dist/esm/icons/clock-3.js";
+import { AdsterraAd } from "../../components/ui/AdsterraAd";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
 import { getGuide, guides, guidesHub, guideSlugs, type Guide, type GuideSlug } from "./guidesContent";
@@ -100,6 +101,9 @@ function GuidesHub() {
           {guideSlugs.map((slug) => (
             <GuideCard guide={guides[slug]} key={slug} />
           ))}
+        </div>
+        <div className="mx-auto mt-12 max-w-6xl">
+          <AdsterraAd placement="native" />
         </div>
       </section>
       <SiteFooter languageCode="en" />
@@ -285,6 +289,8 @@ function GuideArticle({ slug }: { slug: GuideSlug }) {
               <VideoEmbed videoId={guide.videoId} title={guide.title} />
             ) : null}
 
+            <AdsterraAd className="mt-8" placement="responsive-banner" />
+
             <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
               <div className="space-y-5 text-base leading-8 text-slate-700">
                 {guide.intro.map((paragraph) => (
@@ -324,6 +330,8 @@ function GuideArticle({ slug }: { slug: GuideSlug }) {
               </aside>
               <UsefulLinks />
             </div>
+
+            <AdsterraAd className="mt-10" placement="rectangle" />
 
             <RelatedGuides currentSlug={slug} />
           </div>
