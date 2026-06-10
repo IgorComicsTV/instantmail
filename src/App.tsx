@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { LanguageMenu } from "./components/ui/LanguageMenu";
 import { SiteFooter } from "./components/ui/SiteFooter";
 import { SiteLogo } from "./components/ui/SiteLogo";
@@ -43,6 +44,9 @@ const ADSENSE_INDEX_EMAIL_TOOLS: SeoToolSlug[] = [
   "temp-mail-for-developers",
   "disposable-email-for-testing",
 ];
+const ADSENSE_INDEX_TOOLS_HUB_LANGUAGES: LanguageCode[] = ["en", "id"];
+const ADSENSE_INDEX_TEN_MINUTE_LANGUAGES: LanguageCode[] = ["en", "es", "hi"];
+const ADSENSE_INDEX_VERIFICATION_LANGUAGES: LanguageCode[] = ["en", "es", "id"];
 
 function readRoute(): RouteState {
   const [first, second, third] = window.location.pathname.split("/").filter(Boolean);
@@ -166,7 +170,10 @@ function isAdsenseIndexableRoute(
   }
 
   if (toolsPage) {
-    return !hasLanguagePrefix;
+    return (
+      !hasLanguagePrefix ||
+      (toolsPage === "hub" && ADSENSE_INDEX_TOOLS_HUB_LANGUAGES.includes(code))
+    );
   }
 
   if (guidesPage) {
@@ -186,7 +193,11 @@ function isAdsenseIndexableRoute(
   }
 
   if (page === "tenMinute") {
-    return code === "en";
+    return ADSENSE_INDEX_TEN_MINUTE_LANGUAGES.includes(code);
+  }
+
+  if (page === "temporary-email-for-verification") {
+    return ADSENSE_INDEX_VERIFICATION_LANGUAGES.includes(code);
   }
 
   return code === "en" && ADSENSE_INDEX_EMAIL_TOOLS.includes(page);
@@ -576,6 +587,7 @@ export function App() {
         <MailApp content={content} basePath={`/${content.code}`} />
       )}
       <Analytics />
+      <SpeedInsights />
     </>
   );
 }
