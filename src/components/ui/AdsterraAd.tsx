@@ -1,3 +1,5 @@
+import { useEffect, useId, useRef, useState } from "react";
+
 type BannerPlacement =
   | "leaderboard"
   | "mobile-banner"
@@ -40,80 +42,137 @@ const bannerAds: Record<BannerPlacement, { key: string; width: number; height: n
   },
 };
 
-function bannerSrcDoc({ key, width, height }: { key: string; width: number; height: number }) {
-  return `<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <base target="_blank" />
-    <style>
-      html, body {
-        width: ${width}px;
-        height: ${height}px;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background: transparent;
-      }
-    </style>
-  </head>
-  <body>
-    <script>
-      window.atOptions = {
-        key: "${key}",
-        format: "iframe",
-        height: ${height},
-        width: ${width},
-        params: {}
-      };
-    </script>
-    <script data-cfasync="false" src="https://bashsecret.com/${key}/invoke.js"></script>
-  </body>
-</html>`;
-}
+let adsterraQueue = Promise.resolve();
 
-function AdFrame({
-  height,
-  srcDoc,
-  title,
-  width,
-}: {
-  height: number;
-  srcDoc: string;
-  title: string;
-  width?: number;
-}) {
-  return (
-    <iframe
-      className="mx-auto block max-w-full overflow-hidden rounded-lg border-0 bg-transparent"
-      height={height}
-      loading="lazy"
-      referrerPolicy="no-referrer-when-downgrade"
-      sandbox="allow-popups allow-popups-to-escape-sandbox allow-scripts"
-      scrolling="no"
-      srcDoc={srcDoc}
-      style={{
-        height,
-        maxWidth: "100%",
-        width: width ? `${width}px` : "100%",
-      }}
-      title={title}
-      width={width}
-    />
-  );
+function renderAdsterraScript(container: HTMLDivElement, config: { key: string; width: number; height: number }) {
+  adsterraQueue = adsterraQueue
+    .catch(() => undefined)
+    .then(
+      () =>
+        new Promise<void>((resolve) => {
+          if (!container.isConnected) {
+            resolve();
+            return;
+          }
+
+          container.innerHTML = "";
+
+          const adWindow = window as Window & {
+            atOptions?: {
+              key: string;
+              format: "iframe";
+              height: number;
+              width: number;
+              params: Record<string, never>;
+            };
+          };
+          const originalWrite = document.write.bind(document);
+          const originalWriteln = document.writeln.bind(document);
+          let restored = false;
+
+          const restoreDocumentWrite = () => {
+            if (restored) {
+              return;
+            }
+
+            document.write = originalWrite;
+            document.writeln = originalWriteln;
+            restored = true;
+          };
+
+          document.write = (...markup: string[]) => {
+            container.insertAdjacentHTML("beforeend", markup.join(""));
+          };
+          document.writeln = (...markup: string[]) => {
+            container.insertAdjacentHTML("beforeend", `${markup.join("")}\n`);
+          };
+
+          adWindow.atOptions = {
+            key: config.key,
+            format: "iframe",
+            height: config.height,
+            width: config.width,
+            params: {},
+          };
+
+          const script = document.createElement("script");
+          script.async = false;
+          script.dataset.cfasync = "false";
+          script.src = `https://bashsecret.com/${config.key}/invoke.js`;
+          script.onload = () => {
+            window.setTimeout(() => {
+              restoreDocumentWrite();
+              resolve();
+            }, 0);
+          };
+          script.onerror = () => {
+            restoreDocumentWrite();
+            resolve();
+          };
+
+          container.appendChild(script);
+
+          window.setTimeout(() => {
+            restoreDocumentWrite();
+            resolve();
+          }, 8000);
+        }),
+    );
 }
 
 function BannerAd({ placement }: { placement: BannerPlacement }) {
   const config = bannerAds[placement];
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const reactId = useId();
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) {
+      return;
+    }
+
+    renderAdsterraScript(container, config);
+
+    return () => {
+      container.innerHTML = "";
+    };
+  }, [config, reactId]);
 
   return (
-    <AdFrame
-      height={config.height}
-      srcDoc={bannerSrcDoc(config)}
-      title={`Advertisement ${config.width} by ${config.height}`}
-      width={config.width}
+    <div
+      aria-label={`Advertisement ${config.width} by ${config.height}`}
+      className="mx-auto block max-w-full overflow-hidden"
+      data-adsterra-key={config.key}
+      ref={containerRef}
+      style={{
+        minHeight: config.height,
+        maxWidth: "100%",
+        width: `${config.width}px`,
+      }}
     />
   );
+}
+
+function useIsDesktopAd() {
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === "undefined") {
+      return true;
+    }
+
+    return window.matchMedia("(min-width: 768px)").matches;
+  });
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    const handleChange = () => setIsDesktop(mediaQuery.matches);
+
+    handleChange();
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  return isDesktop;
 }
 
 export function AdsterraAd({
@@ -123,20 +182,15 @@ export function AdsterraAd({
   className?: string;
   placement: AdsterraPlacement;
 }) {
+  const isDesktopAd = useIsDesktopAd();
+
   return (
     <aside className={`adsterra-slot text-center ${className}`} data-nosnippet>
       <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
         Advertisement
       </p>
       {placement === "responsive-banner" ? (
-        <>
-          <div className="hidden md:block">
-            <BannerAd placement="leaderboard" />
-          </div>
-          <div className="md:hidden">
-            <BannerAd placement="mobile-banner" />
-          </div>
-        </>
+        <BannerAd placement={isDesktopAd ? "leaderboard" : "mobile-banner"} />
       ) : (
         <BannerAd placement={placement} />
       )}
