@@ -27,6 +27,7 @@ import {
   type MailMessage,
   type MailMessageSummary,
 } from "../../lib/mailtm";
+import { AdsterraAd } from "../../components/ui/AdsterraAd";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
@@ -1030,6 +1031,12 @@ export function MailApp({
         </div>
       </section>
 
+      <section className="bg-slate-50 px-4 pb-16 sm:px-6">
+        <div className="mx-auto max-w-6xl">
+          <AdsterraAd placement="responsive-banner" />
+        </div>
+      </section>
+
       <section className="border-t border-slate-200 bg-slate-50 px-4 py-16 sm:px-6" id="features">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
@@ -1107,6 +1114,14 @@ export function MailApp({
           </div>
         </div>
       </section>
+
+      {!hasTenMinuteMode ? (
+        <section className="px-4 pb-16 sm:px-6">
+          <div className="mx-auto max-w-4xl">
+            <AdsterraAd placement="native" />
+          </div>
+        </section>
+      ) : null}
 
       <section className="border-t border-slate-200 bg-slate-50 px-4 py-16 sm:px-6" id="about">
         <div className="mx-auto max-w-3xl">

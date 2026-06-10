@@ -16,6 +16,7 @@ import MailCheck from "lucide-react/dist/esm/icons/mail-check.js";
 import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
 import ShieldCheck from "lucide-react/dist/esm/icons/shield-check.js";
 import type { LucideIcon } from "lucide-react";
+import { AdsterraAd } from "../../components/ui/AdsterraAd";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
@@ -213,6 +214,14 @@ function ToolsHub({ language, hasLanguagePrefix }: ToolsAppProps) {
                 />
               ))}
           </div>
+
+          <AdsterraAd className="mt-12" placement="native" />
+        </div>
+      </section>
+
+      <section className="bg-slate-50 px-4 pb-14 text-slate-950 sm:px-6">
+        <div className="mx-auto max-w-6xl">
+          <AdsterraAd placement="responsive-banner" />
         </div>
       </section>
     </PageShell>
@@ -617,6 +626,7 @@ function ToolPageFrame({
       <section className="bg-slate-50 px-4 py-12 text-slate-950 sm:px-6">
         <div className="mx-auto max-w-6xl">
           {children}
+          <AdsterraAd className="mt-10" placement="rectangle" />
           <ToolTrustAndFaq copy={copy} />
         </div>
       </section>
