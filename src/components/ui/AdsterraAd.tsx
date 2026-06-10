@@ -5,7 +5,7 @@ type BannerPlacement =
   | "rectangle"
   | "vertical"
   | "skyscraper";
-type AdsterraPlacement = BannerPlacement | "responsive-banner" | "native";
+type AdsterraPlacement = BannerPlacement | "responsive-banner";
 
 const bannerAds: Record<BannerPlacement, { key: string; width: number; height: number }> = {
   leaderboard: {
@@ -40,8 +40,6 @@ const bannerAds: Record<BannerPlacement, { key: string; width: number; height: n
   },
 };
 
-const nativeContainerId = "container-9bc9c0f51ba1f6928da5346a0b6b4f22";
-
 function bannerSrcDoc({ key, width, height }: { key: string; width: number; height: number }) {
   return `<!doctype html>
 <html>
@@ -70,35 +68,6 @@ function bannerSrcDoc({ key, width, height }: { key: string; width: number; heig
       };
     </script>
     <script src="https://www.highperformanceformat.com/${key}/invoke.js"></script>
-  </body>
-</html>`;
-}
-
-function nativeSrcDoc() {
-  return `<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <base target="_blank" />
-    <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background: transparent;
-        color: #0f172a;
-        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-
-      #${nativeContainerId} {
-        width: 100%;
-        min-height: 250px;
-      }
-    </style>
-  </head>
-  <body>
-    <script async="async" data-cfasync="false" src="https://pl29703273.effectivecpmnetwork.com/9bc9c0f51ba1f6928da5346a0b6b4f22/invoke.js"></script>
-    <div id="${nativeContainerId}"></div>
   </body>
 </html>`;
 }
@@ -168,12 +137,6 @@ export function AdsterraAd({
             <BannerAd placement="mobile-banner" />
           </div>
         </>
-      ) : placement === "native" ? (
-        <AdFrame
-          height={300}
-          srcDoc={nativeSrcDoc()}
-          title="Advertisement"
-        />
       ) : (
         <BannerAd placement={placement} />
       )}

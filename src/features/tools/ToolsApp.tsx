@@ -18,6 +18,7 @@ import ShieldCheck from "lucide-react/dist/esm/icons/shield-check.js";
 import type { LucideIcon } from "lucide-react";
 import { AdsterraAd } from "../../components/ui/AdsterraAd";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
+import { MonetagTriggers } from "../../components/ui/MonetagTriggers";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
 import { ToolsMenu } from "../../components/ui/ToolsMenu";
@@ -125,6 +126,7 @@ function PageShell({
 }: ToolsAppProps & { children: ReactNode }) {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
+      <MonetagTriggers />
       <Header language={language} hasLanguagePrefix={hasLanguagePrefix} tool={tool} />
       {children}
       <SiteFooter languageCode={language} />
@@ -217,7 +219,7 @@ function ToolsHub({ language, hasLanguagePrefix }: ToolsAppProps) {
               ))}
           </div>
 
-          <AdsterraAd className="mt-12" placement="native" />
+          <AdsterraAd className="mt-12" placement="responsive-banner" />
         </div>
       </section>
 
