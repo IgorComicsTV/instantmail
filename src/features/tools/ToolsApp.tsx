@@ -16,7 +16,7 @@ import MailCheck from "lucide-react/dist/esm/icons/mail-check.js";
 import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
 import ShieldCheck from "lucide-react/dist/esm/icons/shield-check.js";
 import type { LucideIcon } from "lucide-react";
-import { AdsterraAd } from "../../components/ui/AdsterraAd";
+import { AdsterraAd, AdsterraPopunderTrigger } from "../../components/ui/AdsterraAd";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
@@ -125,6 +125,7 @@ function PageShell({
 }: ToolsAppProps & { children: ReactNode }) {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
+      <AdsterraPopunderTrigger />
       <Header language={language} hasLanguagePrefix={hasLanguagePrefix} tool={tool} />
       {children}
       <SiteFooter languageCode={language} />
@@ -198,6 +199,8 @@ function ToolsHub({ language, hasLanguagePrefix }: ToolsAppProps) {
               );
             })}
           </div>
+
+          <AdsterraAd className="mt-12" placement="rectangle" />
 
           <h2 className="mt-14 text-2xl font-bold tracking-tight">{content.temporaryEmailTools}</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -628,6 +631,7 @@ function ToolPageFrame({
           {children}
           <AdsterraAd className="mt-10" placement="rectangle" />
           <ToolTrustAndFaq copy={copy} />
+          <AdsterraAd className="mt-10" placement="responsive-banner" />
         </div>
       </section>
       <MoreTools language={language} hasLanguagePrefix={hasLanguagePrefix} />

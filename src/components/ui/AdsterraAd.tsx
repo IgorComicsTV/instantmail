@@ -1,4 +1,12 @@
-type BannerPlacement = "leaderboard" | "mobile-banner" | "rectangle";
+import { useEffect } from "react";
+
+type BannerPlacement =
+  | "leaderboard"
+  | "mobile-banner"
+  | "medium-banner"
+  | "rectangle"
+  | "vertical"
+  | "skyscraper";
 type AdsterraPlacement = BannerPlacement | "responsive-banner" | "native";
 
 const bannerAds: Record<BannerPlacement, { key: string; width: number; height: number }> = {
@@ -12,14 +20,32 @@ const bannerAds: Record<BannerPlacement, { key: string; width: number; height: n
     width: 320,
     height: 50,
   },
+  "medium-banner": {
+    key: "1aa7733ceb36c0b42fc160c32b1bb1b2",
+    width: 468,
+    height: 60,
+  },
   rectangle: {
     key: "506d4d18913df9f7a267ccc9b420d505",
     width: 300,
     height: 250,
   },
+  vertical: {
+    key: "819412187cdc265bd1c13f9e9f71765a",
+    width: 160,
+    height: 300,
+  },
+  skyscraper: {
+    key: "2681963e3a03dc07e22d271577e64de5",
+    width: 160,
+    height: 600,
+  },
 };
 
 const nativeContainerId = "container-9bc9c0f51ba1f6928da5346a0b6b4f22";
+const popunderScriptSrc = "https://pl29703272.effectivecpmnetwork.com/6b/92/39/6b92393453e67bd4137bbff8749b0a70.js";
+const POPUNDER_STORAGE_KEY = "instantmail.adsterra.popunder.lastShownAt";
+const POPUNDER_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
 function bannerSrcDoc({ key, width, height }: { key: string; width: number; height: number }) {
   return `<!doctype html>
@@ -111,6 +137,69 @@ function AdFrame({
       width={width}
     />
   );
+}
+
+function canRunPopunder() {
+  try {
+    const lastShownAt = Number(window.localStorage.getItem(POPUNDER_STORAGE_KEY) || "0");
+    return !lastShownAt || Date.now() - lastShownAt > POPUNDER_COOLDOWN_MS;
+  } catch {
+    return true;
+  }
+}
+
+function markPopunderShown() {
+  try {
+    window.localStorage.setItem(POPUNDER_STORAGE_KEY, String(Date.now()));
+  } catch {
+    // If storage is unavailable, avoid breaking the user's interaction.
+  }
+}
+
+function injectPopunder() {
+  if (!canRunPopunder()) {
+    return;
+  }
+
+  markPopunderShown();
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = popunderScriptSrc;
+  script.dataset.instantmailAdsterraPopunder = "true";
+  document.body.appendChild(script);
+}
+
+export function AdsterraPopunderTrigger() {
+  useEffect(() => {
+    if (typeof window === "undefined" || !canRunPopunder()) {
+      return;
+    }
+
+    const handleInteraction = (event: Event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (
+        target?.closest(
+          "[data-email-modal], [data-email-link-warning], [data-attachment-download], .email-content",
+        )
+      ) {
+        return;
+      }
+
+      injectPopunder();
+      document.removeEventListener("click", handleInteraction, true);
+      document.removeEventListener("keydown", handleInteraction, true);
+    };
+
+    document.addEventListener("click", handleInteraction, true);
+    document.addEventListener("keydown", handleInteraction, true);
+
+    return () => {
+      document.removeEventListener("click", handleInteraction, true);
+      document.removeEventListener("keydown", handleInteraction, true);
+    };
+  }, []);
+
+  return null;
 }
 
 function BannerAd({ placement }: { placement: BannerPlacement }) {
