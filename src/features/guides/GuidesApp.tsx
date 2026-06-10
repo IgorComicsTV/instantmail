@@ -2,7 +2,7 @@ import ArrowRight from "lucide-react/dist/esm/icons/arrow-right.js";
 import BookOpen from "lucide-react/dist/esm/icons/book-open.js";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days.js";
 import Clock3 from "lucide-react/dist/esm/icons/clock-3.js";
-import { AdsterraAd } from "../../components/ui/AdsterraAd";
+import { AdsterraAd, AdsterraPopunderTrigger } from "../../components/ui/AdsterraAd";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
 import { getGuide, guides, guidesHub, guideSlugs, type Guide, type GuideSlug } from "./guidesContent";
@@ -80,6 +80,7 @@ function GuideCard({ guide }: { guide: Guide }) {
 function GuidesHub() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
+      <AdsterraPopunderTrigger />
       <Header />
       <section className="bg-[radial-gradient(circle_at_top_right,_rgba(37,99,235,0.28),_transparent_34%),linear-gradient(135deg,#020617,#0f172a)] px-4 py-16 text-white sm:px-6">
         <div className="mx-auto max-w-6xl">
@@ -104,6 +105,9 @@ function GuidesHub() {
         </div>
         <div className="mx-auto mt-12 max-w-6xl">
           <AdsterraAd placement="native" />
+        </div>
+        <div className="mx-auto mt-12 max-w-6xl">
+          <AdsterraAd placement="responsive-banner" />
         </div>
       </section>
       <SiteFooter languageCode="en" />
@@ -259,6 +263,7 @@ function GuideArticle({ slug }: { slug: GuideSlug }) {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
+      <AdsterraPopunderTrigger />
       <Header />
       <article>
         <header className="bg-white px-4 py-12 sm:px-6">
@@ -280,10 +285,11 @@ function GuideArticle({ slug }: { slug: GuideSlug }) {
         </header>
 
         <section className="px-4 pb-14 sm:px-6">
-          <div className="mx-auto max-w-4xl">
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <img alt={guide.title} className="aspect-[16/9] w-full object-cover" src={guide.image} />
-            </div>
+          <div className="mx-auto grid max-w-6xl gap-8 xl:grid-cols-[1fr_180px]">
+            <div className="min-w-0">
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <img alt={guide.title} className="aspect-[16/9] w-full object-cover" src={guide.image} />
+              </div>
 
             {guide.videoId ? (
               <VideoEmbed videoId={guide.videoId} title={guide.title} />
@@ -332,8 +338,15 @@ function GuideArticle({ slug }: { slug: GuideSlug }) {
             </div>
 
             <AdsterraAd className="mt-10" placement="rectangle" />
+            <AdsterraAd className="mt-10" placement="native" />
 
-            <RelatedGuides currentSlug={slug} />
+              <RelatedGuides currentSlug={slug} />
+            </div>
+            <aside className="hidden xl:block">
+              <div className="sticky top-24">
+                <AdsterraAd placement="skyscraper" />
+              </div>
+            </aside>
           </div>
         </section>
       </article>

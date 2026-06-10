@@ -27,7 +27,7 @@ import {
   type MailMessage,
   type MailMessageSummary,
 } from "../../lib/mailtm";
-import { AdsterraAd } from "../../components/ui/AdsterraAd";
+import { AdsterraAd, AdsterraPopunderTrigger } from "../../components/ui/AdsterraAd";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
@@ -755,6 +755,7 @@ export function MailApp({
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
+      <AdsterraPopunderTrigger />
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <a className="flex items-center gap-2.5" href={`${basePath}/`} aria-label="Instant Mail home">
@@ -1072,6 +1073,12 @@ export function MailApp({
         </div>
       </section>
 
+      <section className="bg-slate-50 px-4 pb-16 sm:px-6">
+        <div className="mx-auto max-w-6xl">
+          <AdsterraAd placement={hasTenMinuteMode ? "rectangle" : "medium-banner"} />
+        </div>
+      </section>
+
       <section className="px-4 py-16 sm:px-6" id="faq">
         <div className="mx-auto max-w-3xl">
           <div className="text-center">
@@ -1164,6 +1171,7 @@ export function MailApp({
           aria-labelledby="message-modal-title"
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-3 sm:p-6"
+          data-email-modal
           onKeyDown={(event) => {
             if (
               event.key === "Escape" ||
@@ -1265,6 +1273,7 @@ export function MailApp({
                 <>
                   <div
                     className="email-content min-h-[280px] overflow-auto rounded-lg border border-slate-200 bg-white p-5 sm:p-6"
+                    data-email-content
                     onClickCapture={handleEmailContentClick}
                     dangerouslySetInnerHTML={{
                       __html: activeMessagePayload,
@@ -1302,6 +1311,7 @@ export function MailApp({
                             </div>
                             <button
                               className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-brand-600 px-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-60"
+                              data-attachment-download
                               disabled={
                                 !attachment.downloadUrl ||
                                 attachmentStatus[attachment.id] === t.errors.downloading
@@ -1331,6 +1341,7 @@ export function MailApp({
               aria-labelledby="email-link-warning-title"
               aria-modal="true"
               className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/45 p-4"
+              data-email-link-warning
               onMouseDown={(event) => {
                 event.stopPropagation();
                 closeLinkWarning();
