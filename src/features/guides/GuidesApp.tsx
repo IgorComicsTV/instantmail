@@ -2,7 +2,8 @@ import ArrowRight from "lucide-react/dist/esm/icons/arrow-right.js";
 import BookOpen from "lucide-react/dist/esm/icons/book-open.js";
 import CalendarDays from "lucide-react/dist/esm/icons/calendar-days.js";
 import Clock3 from "lucide-react/dist/esm/icons/clock-3.js";
-import { AdsterraAd, AdsterraPopunderTrigger } from "../../components/ui/AdsterraAd";
+import { AdsterraAd } from "../../components/ui/AdsterraAd";
+import { MonetagTriggers } from "../../components/ui/MonetagTriggers";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
 import { getGuide, guides, guidesHub, guideSlugs, type Guide, type GuideSlug } from "./guidesContent";
@@ -80,7 +81,7 @@ function GuideCard({ guide }: { guide: Guide }) {
 function GuidesHub() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
-      <AdsterraPopunderTrigger />
+      <MonetagTriggers />
       <Header />
       <section className="bg-[radial-gradient(circle_at_top_right,_rgba(37,99,235,0.28),_transparent_34%),linear-gradient(135deg,#020617,#0f172a)] px-4 py-16 text-white sm:px-6">
         <div className="mx-auto max-w-6xl">
@@ -104,7 +105,7 @@ function GuidesHub() {
           ))}
         </div>
         <div className="mx-auto mt-12 max-w-6xl">
-          <AdsterraAd placement="native" />
+          <AdsterraAd placement="rectangle" />
         </div>
         <div className="mx-auto mt-12 max-w-6xl">
           <AdsterraAd placement="responsive-banner" />
@@ -263,7 +264,7 @@ function GuideArticle({ slug }: { slug: GuideSlug }) {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
-      <AdsterraPopunderTrigger />
+      <MonetagTriggers />
       <Header />
       <article>
         <header className="bg-white px-4 py-12 sm:px-6">
@@ -338,7 +339,7 @@ function GuideArticle({ slug }: { slug: GuideSlug }) {
             </div>
 
             <AdsterraAd className="mt-10" placement="rectangle" />
-            <AdsterraAd className="mt-10" placement="native" />
+            <AdsterraAd className="mt-10" placement="responsive-banner" />
 
               <RelatedGuides currentSlug={slug} />
             </div>

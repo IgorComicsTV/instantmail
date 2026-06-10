@@ -27,8 +27,9 @@ import {
   type MailMessage,
   type MailMessageSummary,
 } from "../../lib/mailtm";
-import { AdsterraAd, AdsterraPopunderTrigger } from "../../components/ui/AdsterraAd";
+import { AdsterraAd } from "../../components/ui/AdsterraAd";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
+import { MonetagTriggers } from "../../components/ui/MonetagTriggers";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
 import { ToolsMenu } from "../../components/ui/ToolsMenu";
@@ -755,7 +756,7 @@ export function MailApp({
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
-      <AdsterraPopunderTrigger />
+      <MonetagTriggers />
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <a className="flex items-center gap-2.5" href={`${basePath}/`} aria-label="Instant Mail home">
@@ -1125,7 +1126,7 @@ export function MailApp({
       {!hasTenMinuteMode ? (
         <section className="px-4 pb-16 sm:px-6">
           <div className="mx-auto max-w-4xl">
-            <AdsterraAd placement="native" />
+            <AdsterraAd placement="responsive-banner" />
           </div>
         </section>
       ) : null}
