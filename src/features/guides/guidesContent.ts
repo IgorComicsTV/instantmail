@@ -1,4 +1,6 @@
-export const guideSlugs = [
+import { extraGuideSlugs, extraGuides } from "./extraGuides";
+
+const baseGuideSlugs = [
   "what-is-a-temporary-email",
   "is-temporary-email-safe",
   "temporary-email-for-verification-codes",
@@ -11,6 +13,10 @@ export const guideSlugs = [
   "how-to-create-a-temp-mail-without-registration",
 ] as const;
 
+type BaseGuideSlug = (typeof baseGuideSlugs)[number];
+
+export const guideSlugs = [...baseGuideSlugs, ...extraGuideSlugs] as const;
+
 export type GuideSlug = (typeof guideSlugs)[number];
 
 type GuideSection = {
@@ -20,7 +26,7 @@ type GuideSection = {
 };
 
 export type Guide = {
-  slug: GuideSlug;
+  slug: string;
   title: string;
   description: string;
   category: string;
@@ -46,7 +52,7 @@ export const guidesHub = {
 const author = "Igor Corrêa";
 const updated = "May 30, 2026";
 
-export const guides: Record<GuideSlug, Guide> = {
+const baseGuides: Record<BaseGuideSlug, Guide> = {
   "what-is-a-temporary-email": {
     slug: "what-is-a-temporary-email",
     title: "What Is a Temporary Email?",
@@ -485,6 +491,11 @@ export const guides: Record<GuideSlug, Guide> = {
       "Creating a temporary inbox without registration is fast and convenient. Keep it for short tasks and use your real email for anything important.",
   },
 };
+
+export const guides = {
+  ...baseGuides,
+  ...extraGuides,
+} as Record<GuideSlug, Guide>;
 
 export function isGuideSlug(value: string | undefined): value is GuideSlug {
   return !!value && guideSlugs.includes(value as GuideSlug);

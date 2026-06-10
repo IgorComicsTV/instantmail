@@ -6,6 +6,7 @@ import { AdsterraAd } from "../../components/ui/AdsterraAd";
 import { MonetagTriggers } from "../../components/ui/MonetagTriggers";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
+import { getGuideResources } from "./guideResources";
 import { getGuide, guides, guidesHub, guideSlugs, type Guide, type GuideSlug } from "./guidesContent";
 
 type GuidesAppProps = {
@@ -149,59 +150,14 @@ function VideoEmbed({ videoId, title }: { videoId: string; title: string }) {
 }
 
 function RelatedGuides({ currentSlug }: { currentSlug: GuideSlug }) {
-  const relatedMap: Record<GuideSlug, GuideSlug[]> = {
-    "what-is-a-temporary-email": [
-      "disposable-email-vs-regular-email",
-      "is-temporary-email-safe",
-      "how-to-create-a-temp-mail-without-registration",
-    ],
-    "is-temporary-email-safe": [
-      "how-to-protect-your-email-address-online",
-      "what-is-a-data-breach-and-how-to-prevent-it",
-      "what-is-a-temporary-email",
-    ],
-    "temporary-email-for-verification-codes": [
-      "how-to-create-a-temp-mail-without-registration",
-      "how-developers-can-test-email-signups",
-      "is-temporary-email-safe",
-    ],
-    "how-to-avoid-spam-emails": [
-      "what-is-a-temporary-email",
-      "how-to-protect-your-email-address-online",
-      "disposable-email-vs-regular-email",
-    ],
-    "disposable-email-vs-regular-email": [
-      "what-is-a-temporary-email",
-      "what-is-a-burner-email",
-      "how-to-protect-your-email-address-online",
-    ],
-    "what-is-a-burner-email": [
-      "disposable-email-vs-regular-email",
-      "is-temporary-email-safe",
-      "how-to-avoid-spam-emails",
-    ],
-    "how-developers-can-test-email-signups": [
-      "temporary-email-for-verification-codes",
-      "what-is-a-temporary-email",
-      "is-temporary-email-safe",
-    ],
-    "how-to-protect-your-email-address-online": [
-      "how-to-avoid-spam-emails",
-      "what-is-a-data-breach-and-how-to-prevent-it",
-      "is-temporary-email-safe",
-    ],
-    "what-is-a-data-breach-and-how-to-prevent-it": [
-      "how-to-protect-your-email-address-online",
-      "how-to-avoid-spam-emails",
-      "disposable-email-vs-regular-email",
-    ],
-    "how-to-create-a-temp-mail-without-registration": [
-      "what-is-a-temporary-email",
-      "temporary-email-for-verification-codes",
-      "is-temporary-email-safe",
-    ],
-  };
-  const related = relatedMap[currentSlug];
+  const currentGuide = getGuide(currentSlug);
+  const sameCategory = guideSlugs.filter(
+    (slug) => slug !== currentSlug && getGuide(slug).category === currentGuide.category,
+  );
+  const fallback = guideSlugs.filter(
+    (slug) => slug !== currentSlug && !sameCategory.includes(slug),
+  );
+  const related = [...sameCategory, ...fallback].slice(0, 3);
 
   return (
     <section className="mt-12 border-t border-slate-200 pt-8">
@@ -232,28 +188,59 @@ function RelatedGuides({ currentSlug }: { currentSlug: GuideSlug }) {
   );
 }
 
-function UsefulLinks() {
-  const links = [
-    { href: "/en/", label: "Temporary Email Tool" },
-    { href: "/tools", label: "All free tools" },
-    { href: "/tools/password-generator", label: "Password Generator" },
-    { href: "/tools/what-is-my-ip", label: "What Is My IP" },
-    { href: "/tools/email-dns-checker", label: "Email DNS Checker" },
-  ];
-
+function ResourceList({
+  items,
+  title,
+}: {
+  items: { title: string; description: string; href: string }[];
+  title: string;
+}) {
   return (
-    <section className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5">
-      <h2 className="text-lg font-bold text-slate-950">Useful next steps</h2>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {links.map((link) => (
+    <div>
+      <h3 className="text-sm font-bold uppercase tracking-wide text-blue-700">{title}</h3>
+      <div className="mt-3 grid gap-3">
+        {items.map((item) => (
           <a
-            className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700"
-            href={link.href}
-            key={link.href}
+            className="group rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-200 hover:bg-blue-50"
+            href={item.href}
+            key={item.href}
+            rel={item.href.startsWith("http") && !item.href.includes("instantmail.online") ? "noopener noreferrer" : undefined}
+            target={item.href.startsWith("http") && !item.href.includes("instantmail.online") ? "_blank" : undefined}
           >
-            {link.label}
+            <span className="font-bold text-slate-950 group-hover:text-blue-700">
+              {item.title}
+            </span>
+            <span className="mt-1 block text-sm leading-relaxed text-slate-600">
+              {item.description}
+            </span>
           </a>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function GuideResourcePanel({ guide, slug }: { guide: Guide; slug: GuideSlug }) {
+  const resources = getGuideResources(slug, guide);
+
+  return (
+    <section className="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
+      <div className="max-w-2xl">
+        <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
+          Practical next steps
+        </p>
+        <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">
+          Tools and trusted references for this topic
+        </h2>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">
+          These links are selected for this guide so you can apply the advice with
+          Instant Mail tools and compare it with established security resources.
+        </p>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <ResourceList items={resources.tools} title="Instant Mail tools" />
+        <ResourceList items={resources.references} title="Trusted references" />
       </div>
     </section>
   );
@@ -335,7 +322,7 @@ function GuideArticle({ slug }: { slug: GuideSlug }) {
                   {guide.takeaway}
                 </p>
               </aside>
-              <UsefulLinks />
+              <GuideResourcePanel guide={guide} slug={slug} />
             </div>
 
             <AdsterraAd className="mt-10" placement="rectangle" />
