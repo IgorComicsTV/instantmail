@@ -3,7 +3,7 @@ import { useEffect } from "react";
 const POPUNDER_SCRIPT_SRC = "https://al5sm.com/tag.min.js";
 const PUSH_SCRIPT_SRC = "https://5gvci.com/act/files/tag.min.js?z=11129137";
 const POPUNDER_ZONE = "11129136";
-const POPUNDER_STORAGE_KEY = "instantmail.monetag.popunder.lastShownAt";
+const POPUNDER_STORAGE_KEY = "instantmail.monetag.popunder.lastLoadedAt.v2";
 const PUSH_SESSION_KEY = "instantmail.monetag.push.loaded";
 const POPUNDER_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
@@ -40,14 +40,22 @@ function markPushLoaded() {
   }
 }
 
-function appendScript(src: string, attributes: Record<string, string> = {}) {
+function appendScript(
+  src: string,
+  attributes: Record<string, string> = {},
+  onLoad?: () => void,
+  onError?: () => void,
+) {
   if (document.querySelector(`script[src="${src}"]`)) {
+    onLoad?.();
     return;
   }
 
   const script = document.createElement("script");
   script.async = true;
   script.src = src;
+  script.onload = () => onLoad?.();
+  script.onerror = () => onError?.();
   Object.entries(attributes).forEach(([key, value]) => {
     script.setAttribute(key, value);
   });
@@ -71,13 +79,15 @@ export function MonetagTriggers() {
       }
 
       if (canRunPopunder()) {
-        markPopunderShown();
-        appendScript(POPUNDER_SCRIPT_SRC, { "data-zone": POPUNDER_ZONE });
+        appendScript(
+          POPUNDER_SCRIPT_SRC,
+          { "data-zone": POPUNDER_ZONE, "data-cfasync": "false" },
+          markPopunderShown,
+        );
       }
 
       if (!hasLoadedPushThisSession()) {
-        markPushLoaded();
-        appendScript(PUSH_SCRIPT_SRC, { "data-cfasync": "false" });
+        appendScript(PUSH_SCRIPT_SRC, { "data-cfasync": "false" }, markPushLoaded);
       }
 
       document.removeEventListener("click", handleInteraction, true);

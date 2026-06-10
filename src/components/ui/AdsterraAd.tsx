@@ -67,7 +67,7 @@ function bannerSrcDoc({ key, width, height }: { key: string; width: number; heig
         params: {}
       };
     </script>
-    <script src="https://www.highperformanceformat.com/${key}/invoke.js"></script>
+    <script data-cfasync="false" src="https://bashsecret.com/${key}/invoke.js"></script>
   </body>
 </html>`;
 }
