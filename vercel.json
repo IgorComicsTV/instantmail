@@ -1,4 +1,33 @@
 {
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "instantmail.online"
+        }
+      ],
+      "destination": "https://www.instantmail.online/en/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "instantmail.online"
+        }
+      ],
+      "destination": "https://www.instantmail.online/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/",
+      "destination": "/en/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api/)(?!.*\\..*).*)",
