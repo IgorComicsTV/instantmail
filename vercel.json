@@ -1,6 +1,16 @@
 {
   "redirects": [
     {
+      "source": "/cgi-bin",
+      "destination": "/en/",
+      "permanent": true
+    },
+    {
+      "source": "/cgi-bin/:path*",
+      "destination": "/en/",
+      "permanent": true
+    },
+    {
       "source": "/",
       "has": [
         {
