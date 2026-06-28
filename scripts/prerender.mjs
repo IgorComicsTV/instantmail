@@ -60,7 +60,7 @@ function startPreviewServer() {
 
     setTimeout(() => {
       if (!resolved) reject(new Error("Timed out waiting for vite preview to start"));
-    }, 20000);
+    }, 90000);
   });
 }
 
