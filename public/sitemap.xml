@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.instantmail.online/tools</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://www.instantmail.online/tools</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/tools" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.instantmail.online/id/tools" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/tools" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.8</priority>
+  </url>
   <url><loc>https://www.instantmail.online/tools/email-dns-checker</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
   <url><loc>https://www.instantmail.online/tools/what-is-my-ip</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
   <url><loc>https://www.instantmail.online/tools/password-generator</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
-  <url><loc>https://www.instantmail.online/en/tools</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
-  <url><loc>https://www.instantmail.online/id/tools</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
+  <url>
+    <loc>https://www.instantmail.online/en/tools</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/tools" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.instantmail.online/id/tools" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/tools" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/id/tools</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/tools" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.instantmail.online/id/tools" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/tools" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
   <url><loc>https://www.instantmail.online/safe-use-policy</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
   <url><loc>https://www.instantmail.online/guides</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
   <url><loc>https://www.instantmail.online/guides/what-is-a-temporary-email</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
@@ -43,37 +65,301 @@
   <url><loc>https://www.instantmail.online/guides/mobile-email-security</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
   <url><loc>https://www.instantmail.online/guides/how-to-recognize-fake-login-pages</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
   <url><loc>https://www.instantmail.online/guides/email-aliases-vs-temporary-email</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/en/</loc><lastmod>2026-06-12</lastmod><priority>1.0</priority></url>
-  <url><loc>https://www.instantmail.online/en/about</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/en/contact</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/en/privacy</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/en/terms</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/en/faq</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/pt/</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
-  <url><loc>https://www.instantmail.online/pt/about</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/pt/contact</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/pt/privacy</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/pt/terms</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/pt/faq</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/es/</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
-  <url><loc>https://www.instantmail.online/es/about</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/es/contact</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/es/privacy</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/es/terms</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/es/faq</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/fr/</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
-  <url><loc>https://www.instantmail.online/fr/about</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/fr/contact</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/fr/privacy</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/fr/terms</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/fr/faq</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/en/10-minute-mail</loc><lastmod>2026-06-12</lastmod><priority>0.9</priority></url>
-  <url><loc>https://www.instantmail.online/es/10-minute-mail</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
-  <url><loc>https://www.instantmail.online/hi/10-minute-mail</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
+  <url>
+    <loc>https://www.instantmail.online/en/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/en/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/about" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/about" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/en/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/contact" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/en/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/privacy" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/en/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/terms" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/terms" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/en/faq</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/faq" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/faq" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/faq" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/faq" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/pt/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/pt/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/about" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/about" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/pt/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/contact" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/pt/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/privacy" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/pt/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/terms" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/terms" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/pt/faq</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/faq" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/faq" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/faq" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/faq" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/es/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/es/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/about" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/about" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/es/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/contact" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/es/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/privacy" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/es/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/terms" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/terms" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/es/faq</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/faq" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/faq" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/faq" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/faq" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/fr/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/fr/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/about" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/about" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/about" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/fr/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/contact" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/contact" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/contact" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/fr/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/privacy" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/privacy" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/privacy" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/fr/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/terms" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/terms" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/terms" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/terms" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/fr/faq</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/faq" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/faq" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.instantmail.online/fr/faq" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://www.instantmail.online/pt/faq" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/faq" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/en/10-minute-mail</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/10-minute-mail" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/10-minute-mail" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://www.instantmail.online/hi/10-minute-mail" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/10-minute-mail" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/es/10-minute-mail</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/10-minute-mail" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/10-minute-mail" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://www.instantmail.online/hi/10-minute-mail" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/10-minute-mail" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/hi/10-minute-mail</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/10-minute-mail" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/10-minute-mail" />
+    <xhtml:link rel="alternate" hreflang="hi" href="https://www.instantmail.online/hi/10-minute-mail" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/10-minute-mail" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
   <url><loc>https://www.instantmail.online/en/temporary-email</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
-  <url><loc>https://www.instantmail.online/en/temporary-email-for-verification</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
-  <url><loc>https://www.instantmail.online/es/temporary-email-for-verification</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
-  <url><loc>https://www.instantmail.online/id/temporary-email-for-verification</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
+  <url>
+    <loc>https://www.instantmail.online/en/temporary-email-for-verification</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/temporary-email-for-verification" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/temporary-email-for-verification" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.instantmail.online/id/temporary-email-for-verification" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/temporary-email-for-verification" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/es/temporary-email-for-verification</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/temporary-email-for-verification" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/temporary-email-for-verification" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.instantmail.online/id/temporary-email-for-verification" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/temporary-email-for-verification" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.instantmail.online/id/temporary-email-for-verification</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/temporary-email-for-verification" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.instantmail.online/es/temporary-email-for-verification" />
+    <xhtml:link rel="alternate" hreflang="id" href="https://www.instantmail.online/id/temporary-email-for-verification" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/temporary-email-for-verification" />
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.7</priority>
+  </url>
   <url><loc>https://www.instantmail.online/en/temp-mail-for-developers</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
   <url><loc>https://www.instantmail.online/en/disposable-email-for-testing</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
 </urlset>

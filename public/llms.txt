@@ -1,0 +1,50 @@
+# Instant Mail
+
+> Instant Mail is a free temporary/disposable email service. Generate a temp email
+> address instantly, receive verification codes and messages in the browser, and
+> protect your real inbox from spam — no signup or account required.
+
+Instant Mail (instantmail.online) lets visitors create a disposable email address
+on demand to receive verification codes, sign up for services without exposing a
+personal address, and avoid spam, leaks, and unwanted marketing email. The inbox
+is browser-based, requires no registration, and addresses expire automatically.
+
+## Product
+
+- [Home](https://www.instantmail.online/en/): Create a temporary email address and view the live inbox.
+- [10-Minute Mail](https://www.instantmail.online/en/10-minute-mail): Short-lived temp email for quick one-time signups.
+- [Temporary Email](https://www.instantmail.online/en/temporary-email): General-purpose disposable email tool.
+- [Temporary Email for Verification](https://www.instantmail.online/en/temporary-email-for-verification): Receive OTPs and verification codes without using a personal inbox.
+- [Temp Mail for Developers](https://www.instantmail.online/en/temp-mail-for-developers): Disposable addresses for testing signup and email flows during development.
+- [Disposable Email for Testing](https://www.instantmail.online/en/disposable-email-for-testing): QA/test-account use case for disposable inboxes.
+
+## Tools
+
+- [Tools Hub](https://www.instantmail.online/tools): Free utilities related to email, networking, and privacy.
+- [Email DNS Checker](https://www.instantmail.online/tools/email-dns-checker): Look up MX, SPF, DKIM, and DMARC records for a domain.
+- [What Is My IP](https://www.instantmail.online/tools/what-is-my-ip): Show the visitor's public IP address.
+- [Password Generator](https://www.instantmail.online/tools/password-generator): Generate strong random passwords.
+
+## Guides
+
+In-depth guides on email privacy, security, and how temporary email works:
+[Guides index](https://www.instantmail.online/guides) — covers topics including
+what temporary/burner email is, how it differs from regular email, spam
+prevention, phishing recognition, two-factor authentication, password
+management, DNS/SPF/DKIM/DMARC/MX records, VPNs, data breaches, and account
+recovery.
+
+## Policies
+
+- [About](https://www.instantmail.online/en/about)
+- [Privacy Policy](https://www.instantmail.online/en/privacy)
+- [Terms](https://www.instantmail.online/en/terms)
+- [FAQ](https://www.instantmail.online/en/faq)
+- [Safe Use Policy](https://www.instantmail.online/safe-use-policy)
+- [Contact](https://www.instantmail.online/en/contact)
+
+## Languages
+
+Instant Mail is available in English (en), Spanish (es), Portuguese (pt),
+French (fr), Indonesian (id), and Hindi (hi). Locale variants are served under
+`/{lang}/` path prefixes (e.g. `/es/`, `/pt/`).
