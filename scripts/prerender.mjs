@@ -8,11 +8,11 @@
 // createRoot(...).render(...), so the live app replaces the prerendered
 // markup the instant JS loads, exactly as it does today. Nothing about
 // the interactive app (the email inbox, tools, language switching) changes.
-import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { readFile, writeFile, mkdir, stat } from "node:fs/promises";
+import { createReadStream, existsSync } from "node:fs";
+import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { spawn } from "node:child_process";
 import puppeteer from "puppeteer";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -21,6 +21,20 @@ const DIST = path.join(ROOT, "dist");
 const PORT = 4319;
 const ORIGIN = `http://127.0.0.1:${PORT}`;
 
+const MIME_TYPES = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".svg": "image/svg+xml",
+  ".xml": "application/xml; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
+  ".webmanifest": "application/manifest+json",
+  ".ico": "image/x-icon",
+};
 
 async function getRoutes() {
   const xml = await readFile(path.join(ROOT, "public/sitemap.xml"), "utf8");
@@ -34,33 +48,40 @@ function outputFileFor(routePath) {
   return path.join(DIST, withSlash, "index.html");
 }
 
-function startPreviewServer() {
+// A minimal static file server standing in for Vercel's static hosting,
+// used instead of `vite preview` (an external CLI process) so the crawl has
+// no dependency on a third-party tool's startup behavior, logging, or any
+// network call it might make — this binds directly to 127.0.0.1 and serves
+// only files already in dist/.
+function startStaticServer() {
   return new Promise((resolve, reject) => {
-    const proc = spawn(
-      path.join(ROOT, "node_modules/.bin/vite"),
-      ["preview", "--port", String(PORT), "--strictPort", "--host", "127.0.0.1"],
-      { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] },
-    );
+    const server = http.createServer(async (req, res) => {
+      try {
+        const url = new URL(req.url, ORIGIN);
+        let filePath = path.join(DIST, decodeURIComponent(url.pathname));
 
-    let resolved = false;
-    const onData = (data) => {
-      const text = data.toString();
-      process.stderr.write(`[vite preview] ${text}`);
-      if (!resolved && /Local:/.test(text)) {
-        resolved = true;
-        resolve(proc);
+        let stats = null;
+        try {
+          stats = await stat(filePath);
+        } catch {
+          // Falls through to the SPA-shell fallback below.
+        }
+
+        if (!stats || stats.isDirectory()) {
+          filePath = path.join(DIST, "index.html");
+        }
+
+        const ext = path.extname(filePath);
+        res.writeHead(200, { "Content-Type": MIME_TYPES[ext] ?? "application/octet-stream" });
+        createReadStream(filePath).pipe(res);
+      } catch (err) {
+        res.writeHead(500, { "Content-Type": "text/plain" });
+        res.end(String(err));
       }
-    };
-
-    proc.stdout.on("data", onData);
-    proc.stderr.on("data", onData);
-    proc.on("exit", (code) => {
-      if (!resolved) reject(new Error(`vite preview exited early (code ${code})`));
     });
 
-    setTimeout(() => {
-      if (!resolved) reject(new Error("Timed out waiting for vite preview to start"));
-    }, 90000);
+    server.on("error", reject);
+    server.listen(PORT, "127.0.0.1", () => resolve(server));
   });
 }
 
@@ -72,16 +93,11 @@ async function main() {
   const routes = await getRoutes();
   console.log(`Prerendering ${routes.length} routes...`);
 
-  let previewProc = await startPreviewServer();
-  let previewExited = false;
-  previewProc.on("exit", (code, signal) => {
-    previewExited = true;
-    console.error(`vite preview exited unexpectedly (code ${code}, signal ${signal})`);
-  });
+  const server = await startStaticServer();
   // --no-sandbox: Chromium's own internal sandbox can block loopback
   // networking in sandboxed CI/agent environments, which otherwise makes
-  // every page.goto() to the local preview server fail with
-  // ERR_CONNECTION_REFUSED even though the server is reachable via curl.
+  // every page.goto() to the local server fail with ERR_CONNECTION_REFUSED
+  // even though the server is reachable via curl.
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -108,24 +124,11 @@ async function main() {
     });
 
     const crawlRoute = async (routePath) => {
-      // The preview server has been observed to die mid-crawl under heavy
-      // host machine load; restart it transparently rather than failing
-      // every remaining route.
-      if (previewExited) {
-        console.error("Restarting vite preview server...");
-        previewExited = false;
-        previewProc = await startPreviewServer();
-        previewProc.on("exit", (code, signal) => {
-          previewExited = true;
-          console.error(`vite preview exited unexpectedly (code ${code}, signal ${signal})`);
-        });
-      }
-
       await page.goto(`${ORIGIN}${routePath}`, { waitUntil: "domcontentloaded", timeout: 30000 });
       // useSeo() runs in a useEffect after mount and always sets a
       // robots meta tag, so waiting for it confirms the route's real
       // SEO metadata has been written to the DOM before we snapshot it.
-      await page.waitForSelector('meta[name="robots"]', { timeout: 10000 });
+      await page.waitForSelector('meta[name="robots"]', { timeout: 15000 });
 
       const html = await page.content();
       const outFile = outputFileFor(routePath);
@@ -142,8 +145,8 @@ async function main() {
       }
     }
 
-    // A second pass for routes that failed only because they raced the
-    // preview server restart above — most of these succeed on retry.
+    // A second pass for routes that failed transiently (e.g. a slow first
+    // load); most of these succeed on retry.
     if (failed.length > 0) {
       const retryList = failed;
       failed = [];
@@ -158,7 +161,7 @@ async function main() {
     }
   } finally {
     await browser.close();
-    previewProc.kill("SIGKILL");
+    await new Promise((resolve) => server.close(resolve));
   }
 
   console.log(`Prerendered ${ok}/${routes.length} routes.`);
@@ -167,9 +170,6 @@ async function main() {
     for (const f of failed) console.error(`  ${f.routePath}: ${f.error}`);
   }
 
-  // The spawned preview server's stdio pipes can keep the event loop alive
-  // even after it's been killed, so exit explicitly instead of relying on
-  // the loop to drain naturally.
   process.exit(failed.length > 0 ? 1 : 0);
 }
 
