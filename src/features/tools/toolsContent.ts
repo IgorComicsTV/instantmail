@@ -1,9 +1,12 @@
 import type { LanguageCode } from "../mail/i18n";
+import { extraToolsContent } from "./extraToolsContent";
 
 export const standaloneToolSlugs = [
   "email-dns-checker",
   "what-is-my-ip",
   "password-generator",
+  "fake-data-generator",
+  "qr-code-generator",
 ] as const;
 
 export type StandaloneToolSlug = (typeof standaloneToolSlugs)[number];
@@ -400,5 +403,7 @@ export function getStandaloneToolCopy(code: LanguageCode, slug: StandaloneToolSl
   const copy = toolsContent[code];
   if (slug === "email-dns-checker") return copy.dns;
   if (slug === "what-is-my-ip") return copy.ip;
-  return copy.password;
+  if (slug === "password-generator") return copy.password;
+  if (slug === "fake-data-generator") return extraToolsContent[code].fakeData;
+  return extraToolsContent[code].qrCode;
 }
