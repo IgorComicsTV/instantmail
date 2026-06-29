@@ -2,6 +2,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type Dispatch,
   type FormEvent,
@@ -10,12 +11,16 @@ import {
 } from "react";
 import Check from "lucide-react/dist/esm/icons/check.js";
 import Copy from "lucide-react/dist/esm/icons/copy.js";
+import Database from "lucide-react/dist/esm/icons/database.js";
+import Download from "lucide-react/dist/esm/icons/download.js";
 import Fingerprint from "lucide-react/dist/esm/icons/fingerprint.js";
 import KeyRound from "lucide-react/dist/esm/icons/key-round.js";
 import MailCheck from "lucide-react/dist/esm/icons/mail-check.js";
+import QrCode from "lucide-react/dist/esm/icons/qr-code.js";
 import RefreshCw from "lucide-react/dist/esm/icons/refresh-cw.js";
 import ShieldCheck from "lucide-react/dist/esm/icons/shield-check.js";
 import type { LucideIcon } from "lucide-react";
+import { QRCodeCanvas } from "qrcode.react";
 import { AdsterraAd } from "../../components/ui/AdsterraAd";
 import { LanguageMenu } from "../../components/ui/LanguageMenu";
 import { MonetagTriggers } from "../../components/ui/MonetagTriggers";
@@ -30,6 +35,7 @@ import {
   toolsContent,
   type StandaloneToolSlug,
 } from "./toolsContent";
+import { extraToolsContent } from "./extraToolsContent";
 
 type ToolsAppProps = {
   language: LanguageCode;
@@ -55,6 +61,8 @@ const toolIcons: Record<StandaloneToolSlug, LucideIcon> = {
   "email-dns-checker": MailCheck,
   "what-is-my-ip": Fingerprint,
   "password-generator": KeyRound,
+  "fake-data-generator": Database,
+  "qr-code-generator": QrCode,
 };
 
 function normalizePath(path: string) {
@@ -545,6 +553,206 @@ function PasswordGenerator({ language, hasLanguagePrefix }: ToolsAppProps) {
   );
 }
 
+const FAKE_FIRST_NAMES = [
+  "Liam", "Olivia", "Noah", "Emma", "Lucas", "Sofia", "Mateo", "Aria", "Arjun", "Maya",
+  "Hiroto", "Yuki", "Omar", "Layla", "Ethan", "Chloe", "Diego", "Valentina", "Adam", "Nora",
+  "Felix", "Ingrid", "Pablo", "Camila", "Rafael", "Bianca", "Tariq", "Amina", "Sven", "Elena",
+];
+const FAKE_LAST_NAMES = [
+  "Silva", "Smith", "Garcia", "Müller", "Rossi", "Kim", "Nguyen", "Haddad", "Johansson", "Costa",
+  "Tanaka", "Khan", "Dubois", "Novak", "Andersson", "Santos", "Walker", "Ferrari", "Okafor", "Reyes",
+];
+const FAKE_CITIES = [
+  ["New York", "United States", "US"], ["São Paulo", "Brazil", "BR"], ["London", "United Kingdom", "GB"],
+  ["Berlin", "Germany", "DE"], ["Madrid", "Spain", "ES"], ["Paris", "France", "FR"],
+  ["Jakarta", "Indonesia", "ID"], ["Mumbai", "India", "IN"], ["Toronto", "Canada", "CA"],
+  ["Sydney", "Australia", "AU"], ["Lisbon", "Portugal", "PT"], ["Tokyo", "Japan", "JP"],
+] as const;
+const FAKE_STREETS = ["Maple", "Oak", "Cedar", "Sunset", "River", "Park", "Hill", "Lake", "Pine", "Market"];
+const FAKE_COMPANIES = [
+  "Nimbus Labs", "BrightForge", "Veltrix", "Northwind Co", "Quanta Systems", "Pixel Harbor",
+  "Lumen Works", "Cobalt Studio", "Atlas Digital", "Verdant Group", "Orbit Analytics", "Hearth Foods",
+];
+const FAKE_JOBS = [
+  "Software Engineer", "Product Designer", "Data Analyst", "Marketing Manager", "QA Tester",
+  "Account Executive", "UX Researcher", "DevOps Engineer", "Content Strategist", "Support Lead",
+];
+const FAKE_EMAIL_DOMAINS = ["example.com", "test.dev", "mailinator.test", "demo.email", "sample.org"];
+
+function pick<T>(items: readonly T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function randomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+type FakeProfile = Record<string, string>;
+
+function buildFakeProfile(): FakeProfile {
+  const first = pick(FAKE_FIRST_NAMES);
+  const last = pick(FAKE_LAST_NAMES);
+  const [city, country] = pick(FAKE_CITIES);
+  const handle = `${first}.${last}`.toLowerCase().replace(/[^a-z.]/g, "");
+  const username = `${handle.split(".")[0]}${randomInt(10, 9999)}`;
+  const year = randomInt(1970, 2004);
+  const month = String(randomInt(1, 12)).padStart(2, "0");
+  const day = String(randomInt(1, 28)).padStart(2, "0");
+  const company = pick(FAKE_COMPANIES);
+  const domain = company.toLowerCase().replace(/[^a-z]/g, "");
+
+  return {
+    fullName: `${first} ${last}`,
+    email: `${handle}@${pick(FAKE_EMAIL_DOMAINS)}`,
+    username,
+    phone: `+1 ${randomInt(200, 989)} ${randomInt(200, 989)} ${String(randomInt(0, 9999)).padStart(4, "0")}`,
+    address: `${randomInt(10, 9999)} ${pick(FAKE_STREETS)} St`,
+    city,
+    country,
+    zip: String(randomInt(10000, 99999)),
+    company,
+    jobTitle: pick(FAKE_JOBS),
+    dateOfBirth: `${year}-${month}-${day}`,
+    uuid: crypto.randomUUID(),
+    ipAddress: `${randomInt(1, 223)}.${randomInt(0, 255)}.${randomInt(0, 255)}.${randomInt(1, 254)}`,
+    website: `https://www.${domain}.example`,
+  };
+}
+
+function FakeDataGenerator({ language, hasLanguagePrefix }: ToolsAppProps) {
+  const content = toolsContent[language];
+  const copy = extraToolsContent[language].fakeData;
+  const [count, setCount] = useState(1);
+  const [profiles, setProfiles] = useState<FakeProfile[]>([]);
+  const [copied, setCopied] = useState(false);
+
+  const generate = useCallback(() => {
+    setProfiles(Array.from({ length: count }, () => buildFakeProfile()));
+    setCopied(false);
+  }, [count]);
+
+  useEffect(() => {
+    generate();
+  }, [generate]);
+
+  async function copyJson() {
+    if (!profiles.length) return;
+    await navigator.clipboard.writeText(JSON.stringify(profiles, null, 2));
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  }
+
+  const fieldOrder: { key: keyof typeof copy.fields; }[] = [
+    { key: "fullName" }, { key: "email" }, { key: "username" }, { key: "phone" },
+    { key: "address" }, { key: "city" }, { key: "country" }, { key: "zip" },
+    { key: "company" }, { key: "jobTitle" }, { key: "dateOfBirth" }, { key: "uuid" },
+    { key: "ipAddress" }, { key: "website" },
+  ];
+
+  return (
+    <ToolPageFrame copy={copy} language={language} hasLanguagePrefix={hasLanguagePrefix}>
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap items-end gap-4">
+          <label className="text-sm font-semibold text-slate-700">
+            {copy.countLabel}
+            <select
+              className="mt-2 block h-11 w-28 rounded-lg border border-slate-200 px-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              onChange={(event) => setCount(Number(event.target.value))}
+              value={count}
+            >
+              {[1, 3, 5, 10].map((value) => (
+                <option key={value} value={value}>{value}</option>
+              ))}
+            </select>
+          </label>
+          <button className="inline-flex h-11 items-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-bold text-white hover:bg-blue-700" onClick={generate} type="button">
+            <RefreshCw size={16} /> {copy.regenerate}
+          </button>
+          <button className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 px-4 text-sm font-bold text-slate-700 hover:bg-slate-50" disabled={!profiles.length} onClick={() => void copyJson()} type="button">
+            {copied ? <Check size={16} /> : <Copy size={16} />} {copied ? copy.copied : copy.copyJson}
+          </button>
+        </div>
+
+        <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{copy.note}</p>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {profiles.map((profile, index) => (
+            <article className="rounded-xl border border-slate-200 bg-slate-50 p-4" key={profile.uuid ?? index}>
+              <dl className="grid gap-2 text-sm">
+                {fieldOrder.map(({ key }) => (
+                  <div className="flex items-start justify-between gap-3" key={key}>
+                    <dt className="font-semibold text-slate-500">{copy.fields[key]}</dt>
+                    <dd className="break-all text-right font-medium text-slate-900">{profile[key]}</dd>
+                  </div>
+                ))}
+              </dl>
+            </article>
+          ))}
+        </div>
+      </div>
+      <InfoBlocks title={copy.explanationTitle} body={copy.explanation} sections={copy.sections} />
+    </ToolPageFrame>
+  );
+}
+
+function QrCodeGenerator({ language, hasLanguagePrefix }: ToolsAppProps) {
+  const copy = extraToolsContent[language].qrCode;
+  const [value, setValue] = useState("https://www.instantmail.online/");
+  const [size, setSize] = useState(256);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  function downloadPng() {
+    const canvas = wrapperRef.current?.querySelector("canvas");
+    if (!canvas) return;
+    const link = document.createElement("a");
+    link.download = "qr-code.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }
+
+  const trimmed = value.trim();
+
+  return (
+    <ToolPageFrame copy={copy} language={language} hasLanguagePrefix={hasLanguagePrefix}>
+      <div className="grid gap-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-[1fr_auto]">
+        <div>
+          <label className="text-sm font-semibold text-slate-700">
+            {copy.inputLabel}
+            <textarea
+              className="mt-2 h-28 w-full rounded-lg border border-slate-200 p-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              onChange={(event) => setValue(event.target.value)}
+              placeholder={copy.inputPlaceholder}
+              value={value}
+            />
+          </label>
+          <label className="mt-4 block text-sm font-semibold text-slate-700">
+            {copy.sizeLabel}: {size}px
+            <input className="mt-3 w-full accent-blue-600" max={512} min={128} onChange={(event) => setSize(Number(event.target.value))} step={32} type="range" value={size} />
+          </label>
+          <button
+            className="mt-4 inline-flex h-11 items-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-50"
+            disabled={!trimmed}
+            onClick={downloadPng}
+            type="button"
+          >
+            <Download size={16} /> {copy.downloadPng}
+          </button>
+        </div>
+        <div className="flex items-center justify-center" ref={wrapperRef}>
+          {trimmed ? (
+            <div className="rounded-xl bg-white p-3 shadow-inner ring-1 ring-slate-200">
+              <QRCodeCanvas level="M" marginSize={2} size={size} value={trimmed} />
+            </div>
+          ) : (
+            <p className="max-w-xs text-center text-sm text-slate-500">{copy.emptyHint}</p>
+          )}
+        </div>
+      </div>
+      <InfoBlocks title={copy.explanationTitle} body={copy.explanation} sections={copy.sections} />
+    </ToolPageFrame>
+  );
+}
+
 function InfoBlocks({ title, body, sections }: { title: string; body: string; sections: { title: string; body: string }[] }) {
   return (
     <section className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -649,6 +857,12 @@ export function ToolsApp({ language, tool, hasLanguagePrefix }: ToolsAppProps) {
   }
   if (tool === "password-generator") {
     return <PasswordGenerator language={language} tool={tool} hasLanguagePrefix={hasLanguagePrefix} />;
+  }
+  if (tool === "fake-data-generator") {
+    return <FakeDataGenerator language={language} tool={tool} hasLanguagePrefix={hasLanguagePrefix} />;
+  }
+  if (tool === "qr-code-generator") {
+    return <QrCodeGenerator language={language} tool={tool} hasLanguagePrefix={hasLanguagePrefix} />;
   }
   return <ToolsHub language={language} tool={null} hasLanguagePrefix={hasLanguagePrefix} />;
 }

@@ -520,6 +520,8 @@ export function getToolNavigationItems(code: LanguageCode): { slug: ToolSlug; la
     { slug: "tools/email-dns-checker" as const, label: getStandaloneToolCopy(code, "email-dns-checker").navLabel },
     { slug: "tools/what-is-my-ip" as const, label: getStandaloneToolCopy(code, "what-is-my-ip").navLabel },
     { slug: "tools/password-generator" as const, label: getStandaloneToolCopy(code, "password-generator").navLabel },
+    { slug: "tools/fake-data-generator" as const, label: getStandaloneToolCopy(code, "fake-data-generator").navLabel },
+    { slug: "tools/qr-code-generator" as const, label: getStandaloneToolCopy(code, "qr-code-generator").navLabel },
     { slug: "temporary-email" as const, label: mergeCopy(code, "temporary-email").navLabel },
     { slug: tenMinuteSlug, label: tenMinuteContent[code].hero.h1Start.replace(/,$/, "") },
     {
