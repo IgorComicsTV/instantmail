@@ -195,8 +195,12 @@ export function computeSeoMeta(route: RouteState): SeoMeta {
   const title = guidePage ? `${guidePage.title} | Instant Mail Guides` : guideHub?.title ?? standaloneTool?.title ?? toolsHub?.title ?? tenMinutePage?.title ?? toolPage?.title ?? (trustPage ? `${trustPage.title} | Instant Mail` : content.title);
   const description = guidePage?.description ?? guideHub?.description ?? standaloneTool?.description ?? toolsHub?.description ?? tenMinutePage?.description ?? toolPage?.description ?? trustPage?.description ?? content.description;
 
+  // The unprefixed /tools URL *is* the English tools hub, so /en/tools is a
+  // pure duplicate of it. Canonicalizing /en/tools to /tools (paired with a
+  // 301 in vercel.json) keeps exactly one indexable English hub URL —
+  // otherwise GSC reports the pair as "Duplicate/alternate page".
   const toolsPath = toolsPage === "hub"
-    ? hasLanguagePrefix
+    ? hasLanguagePrefix && content.code !== "en"
       ? `/${content.code}/tools`
       : "/tools"
     : toolsPage
@@ -322,6 +326,14 @@ export function computeSeoMeta(route: RouteState): SeoMeta {
   }
 
   const alternates: SeoAlternate[] = [];
+  if (toolsPage === "hub") {
+    // The tools hub has exactly two indexable language variants: /tools
+    // (English, unprefixed — /en/tools 301s to it) and /id/tools. Emit the
+    // bidirectional hreflang pair so the page agrees with the sitemap;
+    // one-sided or mismatched hreflang gets ignored by Google.
+    alternates.push({ hreflang: "en", href: `${CANONICAL_ORIGIN}/tools` });
+    alternates.push({ hreflang: "id", href: `${CANONICAL_ORIGIN}/id/tools` });
+  }
   getSeoAlternateCodes(page, toolsPage, guidesPage).forEach((code) => {
     const alternatePath = toolsPage === "hub"
       ? `/${code}/tools`

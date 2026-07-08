@@ -26,6 +26,11 @@
       "source": "/",
       "destination": "/en/",
       "statusCode": 301
+    },
+    {
+      "source": "/en/tools",
+      "destination": "/tools",
+      "statusCode": 301
     }
   ],
   "rewrites": [
