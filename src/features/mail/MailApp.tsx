@@ -727,6 +727,36 @@ export function MailApp({
   }, []);
 
   useEffect(() => {
+    const stripBadge = (title: string) => title.replace(/^\(\d+\)\s/, "");
+    const applyBadge = () => {
+      const baseTitle = stripBadge(document.title);
+      const nextTitle =
+        unreadCount > 0 ? `(${unreadCount}) ${baseTitle}` : baseTitle;
+
+      if (document.title !== nextTitle) {
+        document.title = nextTitle;
+      }
+    };
+
+    applyBadge();
+
+    // useSeo rewrites the title on route/language changes; watch the <title>
+    // element and re-apply the badge (applyBadge is a no-op when unchanged,
+    // so the observer cannot loop).
+    const titleElement = document.head.querySelector("title");
+    const observer = titleElement ? new MutationObserver(applyBadge) : null;
+
+    if (titleElement && observer) {
+      observer.observe(titleElement, { childList: true });
+    }
+
+    return () => {
+      observer?.disconnect();
+      document.title = stripBadge(document.title);
+    };
+  }, [unreadCount]);
+
+  useEffect(() => {
     if (messageModalState === "closed") {
       return undefined;
     }
