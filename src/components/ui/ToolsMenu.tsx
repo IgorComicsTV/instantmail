@@ -22,6 +22,13 @@ export function ToolsMenu({ currentLanguage, currentSlug, hrefFor }: ToolsMenuPr
       <div className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-sm">
         {items.map((item) => {
           const isCurrent = item.slug === currentSlug;
+          // English /tools URLs are canonical WITHOUT the /en prefix
+          // (/en/tools 301s to /tools), so route English users straight to
+          // the unprefixed path instead of linking into a redirect.
+          const href =
+            currentLanguage === "en" && item.slug.startsWith("tools")
+              ? `/${item.slug}`
+              : hrefFor(item.slug);
 
           return (
             <a
@@ -31,7 +38,7 @@ export function ToolsMenu({ currentLanguage, currentSlug, hrefFor }: ToolsMenuPr
                   ? "bg-brand-50 font-semibold text-brand-700"
                   : "text-slate-700 hover:bg-slate-50"
               }`}
-              href={hrefFor(item.slug)}
+              href={href}
               key={item.slug}
             >
               {item.label}

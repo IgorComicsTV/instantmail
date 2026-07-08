@@ -71,18 +71,22 @@ function normalizePath(path: string) {
 
 function Header({ language, hasLanguagePrefix, tool }: ToolsAppProps) {
   const basePath = hasLanguagePrefix ? `/${language}` : "";
+  // On unprefixed tool routes, link home/anchors to /en/ directly — "/" is a
+  // 301 to /en/, and internal links to redirecting URLs feed GSC's
+  // "Page with redirect" bucket and waste crawl budget.
+  const homeBase = hasLanguagePrefix ? `/${language}` : "/en";
   const toolsPath = hasLanguagePrefix ? `/${language}/tools` : "/tools";
   const nav = languages[language].nav;
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-800/70 bg-slate-950/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <a className="flex items-center gap-2.5" href={normalizePath(`${basePath}/`)}>
+        <a className="flex items-center gap-2.5" href={normalizePath(`${homeBase}/`)}>
           <SiteLogo className="h-9 w-9" size={36} />
           <span className="text-lg font-bold tracking-tight text-white">Instant Mail</span>
         </a>
         <nav className="hidden items-center gap-7 text-sm font-medium text-slate-300 md:flex">
-          <a className="transition hover:text-white" href={normalizePath(`${basePath}/`)}>
+          <a className="transition hover:text-white" href={normalizePath(`${homeBase}/`)}>
             {nav.inbox}
           </a>
           <a className="transition hover:text-white" href={toolsPath}>
@@ -94,13 +98,13 @@ function Header({ language, hasLanguagePrefix, tool }: ToolsAppProps) {
           <a className="transition hover:text-white" href="/safe-use-policy">
             Safe Use
           </a>
-          <a className="transition hover:text-white" href={normalizePath(`${basePath}/#features`)}>
+          <a className="transition hover:text-white" href={normalizePath(`${homeBase}/#features`)}>
             {nav.features}
           </a>
-          <a className="transition hover:text-white" href={normalizePath(`${basePath}/#faq`)}>
+          <a className="transition hover:text-white" href={normalizePath(`${homeBase}/#faq`)}>
             {nav.faq}
           </a>
-          <a className="transition hover:text-white" href={normalizePath(`${basePath}/#about`)}>
+          <a className="transition hover:text-white" href={normalizePath(`${homeBase}/#about`)}>
             {nav.about}
           </a>
         </nav>
@@ -109,7 +113,10 @@ function Header({ language, hasLanguagePrefix, tool }: ToolsAppProps) {
             current={language}
             hrefFor={(code) => {
               const localizedToolPath = tool ? `/tools/${tool}` : "/tools";
-              if (!hasLanguagePrefix && code === "en") {
+              // English tool URLs are canonical WITHOUT the /en prefix
+              // (/en/tools 301s to /tools), so always send "en" to the
+              // unprefixed path instead of linking into a redirect.
+              if (code === "en") {
                 return localizedToolPath;
               }
               return `/${code}${localizedToolPath}`;

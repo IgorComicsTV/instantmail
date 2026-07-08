@@ -3,10 +3,10 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.instantmail.online/tools</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/tools" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/tools" />
     <xhtml:link rel="alternate" hreflang="id" href="https://www.instantmail.online/id/tools" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/tools" />
-    <lastmod>2026-06-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/tools" />
+    <lastmod>2026-06-29</lastmod>
     <priority>0.8</priority>
   </url>
   <url><loc>https://www.instantmail.online/tools/email-dns-checker</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
@@ -15,19 +15,11 @@
   <url><loc>https://www.instantmail.online/tools/fake-data-generator</loc><lastmod>2026-06-28</lastmod><priority>0.8</priority></url>
   <url><loc>https://www.instantmail.online/tools/qr-code-generator</loc><lastmod>2026-06-28</lastmod><priority>0.8</priority></url>
   <url>
-    <loc>https://www.instantmail.online/en/tools</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/tools" />
-    <xhtml:link rel="alternate" hreflang="id" href="https://www.instantmail.online/id/tools" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/tools" />
-    <lastmod>2026-06-12</lastmod>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://www.instantmail.online/id/tools</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/en/tools" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.instantmail.online/tools" />
     <xhtml:link rel="alternate" hreflang="id" href="https://www.instantmail.online/id/tools" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/en/tools" />
-    <lastmod>2026-06-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.instantmail.online/tools" />
+    <lastmod>2026-06-29</lastmod>
     <priority>0.7</priority>
   </url>
   <url><loc>https://www.instantmail.online/safe-use-policy</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
