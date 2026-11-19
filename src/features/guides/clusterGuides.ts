@@ -46,7 +46,7 @@ export const clusterGuides: Guide[] = clusterOrder.flatMap((cluster) =>
     ...guide,
     category: clusterMeta[cluster].category,
     cluster,
-    image: `/guides/${guide.slug}.png`,
+    image: `/guides/${guide.slug}.webp`,
     author,
     updated,
   })),
