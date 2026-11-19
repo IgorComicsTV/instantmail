@@ -92,6 +92,14 @@ export type CreatedTempEmail = {
 };
 
 const MAX_DOMAIN_PAGES = 5;
+const REQUEST_TIMEOUT_MS = 8000;
+const DOMAIN_CACHE_TTL_MS = 5 * 60 * 1000;
+const DOMAIN_CACHE_STORAGE_KEY = "instantmail:domains:v1";
+
+type DomainCacheEntry = { domains: MailDomain[]; fetchedAt: number };
+
+const domainCache: Partial<Record<MailProviderId, DomainCacheEntry>> = {};
+const domainRequests: Partial<Record<MailProviderId, Promise<MailDomain[]>>> = {};
 
 const NO_DOMAINS_ERROR =
   "No email domains are available right now. Please try again in a moment.";
@@ -107,6 +115,7 @@ async function request<T>(
 ): Promise<T> {
   const response = await fetch(`${PROVIDERS[providerId].baseUrl}${path}`, {
     ...options,
+    signal: options.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     headers: {
       "Content-Type": "application/json",
       ...options.headers,
@@ -140,29 +149,93 @@ export async function getDomains(
   return getAvailableDomains(providerId);
 }
 
-export async function getAvailableDomains(
-  providerId: MailProviderId = DEFAULT_PROVIDER_ID,
-): Promise<MailDomain[]> {
+function readStoredDomains(): Partial<Record<MailProviderId, DomainCacheEntry>> {
+  try {
+    const raw = sessionStorage.getItem(DOMAIN_CACHE_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as Partial<Record<MailProviderId, DomainCacheEntry>>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function storeDomains(providerId: MailProviderId, entry: DomainCacheEntry) {
+  try {
+    sessionStorage.setItem(
+      DOMAIN_CACHE_STORAGE_KEY,
+      JSON.stringify({ ...readStoredDomains(), [providerId]: entry }),
+    );
+  } catch {
+    // Storage can be unavailable (private mode, quota); the in-memory cache still works.
+  }
+}
+
+function getCachedDomains(providerId: MailProviderId): DomainCacheEntry | undefined {
+  return domainCache[providerId] ?? readStoredDomains()[providerId];
+}
+
+function clearCachedDomains(providerId: MailProviderId) {
+  delete domainCache[providerId];
+  storeDomains(providerId, { domains: [], fetchedAt: 0 });
+}
+
+// Mail.tm answers with a plain array or a Hydra collection depending on the Accept header.
+function getCollectionMembers<T>(payload: CollectionResponse<T> | T[]): T[] {
+  return Array.isArray(payload) ? payload : payload["hydra:member"] ?? [];
+}
+
+async function fetchAvailableDomains(providerId: MailProviderId): Promise<MailDomain[]> {
   const domains: MailDomain[] = [];
 
   for (let page = 1; page <= MAX_DOMAIN_PAGES; page += 1) {
-    const payload = await request<CollectionResponse<MailDomain>>(
+    const payload = await request<CollectionResponse<MailDomain> | MailDomain[]>(
       `/domains?page=${page}`,
-      {},
+      { headers: { Accept: "application/ld+json" } },
       providerId,
     );
-    const activeDomains = payload["hydra:member"].filter(
-      (domain) => domain.domain && domain.isActive !== false,
-    ).map((domain) => ({ ...domain, providerId }));
+    const activeDomains = getCollectionMembers(payload)
+      .filter((domain) => domain.domain && domain.isActive !== false && !domain.isPrivate)
+      .map((domain) => ({ ...domain, providerId }));
 
     domains.push(...activeDomains);
 
-    if (!payload["hydra:view"]?.["hydra:next"]) {
+    if (Array.isArray(payload) || !payload["hydra:view"]?.["hydra:next"]) {
       break;
     }
   }
 
   return domains;
+}
+
+export async function getAvailableDomains(
+  providerId: MailProviderId = DEFAULT_PROVIDER_ID,
+): Promise<MailDomain[]> {
+  const cached = getCachedDomains(providerId);
+
+  if (cached && cached.domains.length > 0 && Date.now() - cached.fetchedAt < DOMAIN_CACHE_TTL_MS) {
+    return cached.domains;
+  }
+
+  // Share one in-flight request so concurrent callers do not burn the provider's rate limit.
+  domainRequests[providerId] ??= fetchAvailableDomains(providerId)
+    .then((domains) => {
+      const entry = { domains, fetchedAt: Date.now() };
+      domainCache[providerId] = entry;
+      storeDomains(providerId, entry);
+      return domains;
+    })
+    .catch((error) => {
+      // A provider outage or rate limit should not hide domains we already know about.
+      if (cached && cached.domains.length > 0) {
+        return cached.domains;
+      }
+
+      throw error;
+    })
+    .finally(() => {
+      delete domainRequests[providerId];
+    });
+
+  return domainRequests[providerId];
 }
 
 export async function getAllAvailableDomains(): Promise<MailDomain[]> {
@@ -211,6 +284,7 @@ export async function createTempEmailWithRandomDomain(): Promise<CreatedTempEmai
   }
 
   const orderedDomains = shuffleDomains(domains);
+  let rateLimited = false;
 
   for (const domain of orderedDomains) {
     const providerId = domain.providerId ?? DEFAULT_PROVIDER_ID;
@@ -230,12 +304,17 @@ export async function createTempEmailWithRandomDomain(): Promise<CreatedTempEmai
       };
     } catch (error) {
       if (isRateLimitError(error)) {
-        throw new Error(RATE_LIMIT_ERROR);
+        // Another provider's domains may still work, so keep trying.
+        rateLimited = true;
+        continue;
       }
+
+      // The domain may have been retired; refetch the list next time.
+      clearCachedDomains(providerId);
     }
   }
 
-  throw new Error(CREATE_TEMP_EMAIL_ERROR);
+  throw new Error(rateLimited ? RATE_LIMIT_ERROR : CREATE_TEMP_EMAIL_ERROR);
 }
 
 export async function createAccount(
