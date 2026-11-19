@@ -1,3 +1,5 @@
+import { clusterGuideSlugs, clusterGuides } from "./clusterGuides";
+import type { GuideCluster } from "./clusterTypes";
 import { extraGuideSlugs, extraGuides } from "./extraGuides";
 
 const baseGuideSlugs = [
@@ -15,9 +17,9 @@ const baseGuideSlugs = [
 
 type BaseGuideSlug = (typeof baseGuideSlugs)[number];
 
-export const guideSlugs = [...baseGuideSlugs, ...extraGuideSlugs] as const;
+export const guideSlugs: string[] = [...baseGuideSlugs, ...extraGuideSlugs, ...clusterGuideSlugs];
 
-export type GuideSlug = (typeof guideSlugs)[number];
+export type GuideSlug = string;
 
 type GuideSection = {
   heading: string;
@@ -38,6 +40,11 @@ export type Guide = {
   intro: string[];
   sections: GuideSection[];
   takeaway: string;
+  // Present on topic-cluster guides only.
+  cluster?: GuideCluster;
+  quickAnswer?: string;
+  demo?: { heading: string; steps: string[]; note?: string };
+  cta?: { label: string; href: string };
 };
 
 export const guidesHub = {
@@ -46,7 +53,7 @@ export const guidesHub = {
     "Read practical guides from Instant Mail about temporary email, spam prevention, verification codes, password safety, data breaches, and protecting your inbox online.",
   h1: "Practical Email Privacy Guides",
   intro:
-    "Clear, useful guides for everyday privacy decisions: when temporary email helps, when it does not, how to handle verification codes, and how to keep your real inbox safer.",
+    "Clear, useful guides on temporary email, verification codes, email testing for developers, and DNS and deliverability: what works, what fails, and how to fix it.",
 };
 
 const author = "Igor Corrêa";
@@ -495,6 +502,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
 export const guides = {
   ...baseGuides,
   ...extraGuides,
+  ...Object.fromEntries(clusterGuides.map((guide) => [guide.slug, guide])),
 } as Record<GuideSlug, Guide>;
 
 export function isGuideSlug(value: string | undefined): value is GuideSlug {

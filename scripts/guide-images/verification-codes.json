@@ -1,0 +1,12 @@
+{
+  "email-verification-code-not-arriving": "an empty glass inbox tray with a glowing magnifying glass hovering above it",
+  "can-temporary-email-receive-otp-codes": "a glowing glass envelope receiving a floating six-slot code keypad",
+  "email-otp-vs-sms-otp-vs-authenticator-app": "three glowing glass objects side by side: an envelope, a phone and a round clock dial",
+  "why-verification-links-expire": "a glowing glass hourglass with a chain link dissolving as the sand runs out",
+  "why-verification-emails-are-delayed": "a glowing glass envelope on a winding track beside a slow pocket clock",
+  "why-verification-code-says-invalid-or-expired": "a glowing glass padlock with a cracked key beside a faded clock face",
+  "how-to-resend-a-verification-email-without-getting-blocked": "a glowing glass envelope with a circular arrow and a small glass shield",
+  "what-to-do-if-you-get-a-verification-code-you-did-not-request": "a glowing glass shield with a stop hand in front of an unexpected glass envelope",
+  "magic-link-vs-one-time-code-login": "a glowing glass chain link and a glowing glass keypad facing each other",
+  "email-verification-vs-phone-verification": "a glowing glass envelope and a glowing glass smartphone balanced on a scale"
+}

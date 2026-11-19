@@ -558,7 +558,7 @@ async function createGuerrillaEmail(): Promise<CreatedTempEmail> {
       updatedAt: now,
     },
     address,
-    password: "",
+    password: sidToken, // loadSession rejects sessions without a password
     providerId: "guerrilla",
     token: { token: sidToken, id: address },
   };

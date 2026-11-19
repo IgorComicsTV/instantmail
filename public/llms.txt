@@ -28,7 +28,12 @@ is browser-based, requires no registration, and addresses expire automatically.
 ## Guides
 
 In-depth guides on email privacy, security, and how temporary email works:
-[Guides index](https://www.instantmail.online/guides) — covers topics including
+[Guides index](https://www.instantmail.online/guides) — organized in four topic
+clusters: temporary email (not receiving messages, how long inboxes last,
+attachments, why sites block disposable domains), verification codes (codes or
+links not arriving, OTP vs SMS vs authenticator apps), developer testing
+(signup, password reset, and transactional email testing), and DNS and
+deliverability (MX, SPF, DKIM, DMARC, bounce codes). It also covers
 what temporary/burner email is, how it differs from regular email, spam
 prevention, phishing recognition, two-factor authentication, password
 management, DNS/SPF/DKIM/DMARC/MX records, VPNs, data breaches, and account

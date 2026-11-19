@@ -6,6 +6,7 @@ import { AdsterraAd } from "../../components/ui/AdsterraAd";
 import { MonetagTriggers } from "../../components/ui/MonetagTriggers";
 import { SiteFooter } from "../../components/ui/SiteFooter";
 import { SiteLogo } from "../../components/ui/SiteLogo";
+import { clusterMeta, clusterOrder } from "./clusterGuides";
 import { getGuideResources } from "./guideResources";
 import { getGuide, guides, guidesHub, guideSlugs, type Guide, type GuideSlug } from "./guidesContent";
 
@@ -100,10 +101,34 @@ function GuidesHub() {
       </section>
 
       <section className="px-4 py-12 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {guideSlugs.map((slug) => (
-            <GuideCard guide={guides[slug]} key={slug} />
-          ))}
+        {clusterOrder.map((cluster) => (
+          <div className="mx-auto mb-14 max-w-6xl" id={cluster} key={cluster}>
+            <h2 className="text-2xl font-bold tracking-tight text-slate-950">
+              {clusterMeta[cluster].label}
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-600">
+              {clusterMeta[cluster].blurb}
+            </p>
+            <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {guideSlugs
+                .filter((slug) => guides[slug].cluster === cluster)
+                .map((slug) => (
+                  <GuideCard guide={guides[slug]} key={slug} />
+                ))}
+            </div>
+          </div>
+        ))}
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-950">
+            More security and privacy guides
+          </h2>
+          <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {guideSlugs
+              .filter((slug) => !guides[slug].cluster)
+              .map((slug) => (
+                <GuideCard guide={guides[slug]} key={slug} />
+              ))}
+          </div>
         </div>
         <div className="mx-auto mt-12 max-w-6xl">
           <AdsterraAd placement="rectangle" />
@@ -157,14 +182,15 @@ function RelatedGuides({ currentSlug }: { currentSlug: GuideSlug }) {
   const fallback = guideSlugs.filter(
     (slug) => slug !== currentSlug && !sameCategory.includes(slug),
   );
-  const related = [...sameCategory, ...fallback].slice(0, 3);
+  // Cluster guides link to 4 siblings so each topic cluster stays tightly interlinked.
+  const related = [...sameCategory, ...fallback].slice(0, currentGuide.cluster ? 4 : 3);
 
   return (
     <section className="mt-12 border-t border-slate-200 pt-8">
       <h2 className="text-2xl font-bold tracking-tight text-slate-950">
         More practical guides
       </h2>
-      <div className="mt-5 grid gap-4 md:grid-cols-3">
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
         {related.map((slug) => {
           const guide = getGuide(slug);
           return (
@@ -286,6 +312,16 @@ function GuideArticle({ slug }: { slug: GuideSlug }) {
             <AdsterraAd className="mt-8" placement="responsive-banner" />
 
             <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+              {guide.quickAnswer ? (
+                <div className="mb-8 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+                  <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
+                    Quick answer
+                  </p>
+                  <p className="mt-2 text-base font-medium leading-relaxed text-slate-900">
+                    {guide.quickAnswer}
+                  </p>
+                </div>
+              ) : null}
               <div className="space-y-5 text-base leading-8 text-slate-700">
                 {guide.intro.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
@@ -315,6 +351,32 @@ function GuideArticle({ slug }: { slug: GuideSlug }) {
                   </section>
                 ))}
               </div>
+
+              {guide.demo ? (
+                <section className="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
+                  <h2 className="text-2xl font-bold tracking-tight text-slate-950">
+                    {guide.demo.heading}
+                  </h2>
+                  <ol className="mt-4 grid gap-3 pl-5 text-base leading-8 text-slate-700">
+                    {guide.demo.steps.map((step) => (
+                      <li className="list-decimal" key={step}>
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
+                  {guide.demo.note ? (
+                    <p className="mt-4 text-sm leading-relaxed text-slate-600">{guide.demo.note}</p>
+                  ) : null}
+                  {guide.cta ? (
+                    <a
+                      className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800"
+                      href={guide.cta.href}
+                    >
+                      {guide.cta.label} <ArrowRight size={16} aria-hidden="true" />
+                    </a>
+                  ) : null}
+                </section>
+              ) : null}
 
               <aside className="mt-10 rounded-2xl border border-blue-100 bg-blue-50 p-5">
                 <h2 className="text-lg font-bold text-slate-950">Key takeaway</h2>
