@@ -627,7 +627,6 @@ function buildFakeProfile(): FakeProfile {
 }
 
 function FakeDataGenerator({ language, hasLanguagePrefix }: ToolsAppProps) {
-  const content = toolsContent[language];
   const copy = extraToolsContent[language].fakeData;
   const [count, setCount] = useState(1);
   const [profiles, setProfiles] = useState<FakeProfile[]>([]);
