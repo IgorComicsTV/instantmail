@@ -23,7 +23,7 @@
     <priority>0.7</priority>
   </url>
   <url><loc>https://www.instantmail.online/safe-use-policy</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
-  <url><loc>https://www.instantmail.online/guides</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
+  <url><loc>https://www.instantmail.online/guides</loc><lastmod>2026-11-19</lastmod><priority>0.8</priority></url>
   <url><loc>https://www.instantmail.online/guides/what-is-a-temporary-email</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
   <url><loc>https://www.instantmail.online/guides/is-temporary-email-safe</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
   <url><loc>https://www.instantmail.online/guides/temporary-email-for-verification-codes</loc><lastmod>2026-06-12</lastmod><priority>0.7</priority></url>
@@ -356,4 +356,44 @@
   </url>
   <url><loc>https://www.instantmail.online/en/temp-mail-for-developers</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
   <url><loc>https://www.instantmail.online/en/disposable-email-for-testing</loc><lastmod>2026-06-12</lastmod><priority>0.8</priority></url>
+  <url><loc>https://www.instantmail.online/guides/temporary-email-not-receiving-messages</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-long-does-a-temporary-email-last</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/can-temporary-email-receive-attachments</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/temporary-email-vs-10-minute-mail</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/why-websites-block-disposable-emails</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-use-a-temporary-email-step-by-step</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/can-you-send-email-from-a-temporary-email-address</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-avoid-losing-access-to-a-temporary-inbox</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/temporary-email-privacy-what-it-hides-and-what-it-does-not</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/temporary-email-for-newsletters-and-one-time-downloads</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/email-verification-code-not-arriving</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/can-temporary-email-receive-otp-codes</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/email-otp-vs-sms-otp-vs-authenticator-app</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/why-verification-links-expire</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/why-verification-emails-are-delayed</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/why-verification-code-says-invalid-or-expired</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-resend-a-verification-email-without-getting-blocked</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/what-to-do-if-you-get-a-verification-code-you-did-not-request</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/magic-link-vs-one-time-code-login</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/email-verification-vs-phone-verification</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-test-signup-emails</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-test-password-reset-emails</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-test-transactional-emails-in-staging</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/email-testing-checklist-for-developers</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/disposable-email-for-qa-testing</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-test-email-verification-flows</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-test-magic-link-login-emails</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-test-email-change-confirmation-flows</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/common-bugs-in-signup-and-verification-emails</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-test-email-resend-and-rate-limits</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/mx-record-lookup-and-common-errors</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/spf-record-checker-common-failures</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/dkim-selectors-explained-and-how-to-find-yours</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/why-emails-are-not-being-delivered</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/dmarc-policies-none-quarantine-reject-explained</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/spf-too-many-dns-lookups-permerror</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/why-your-emails-go-to-spam-dns-checklist</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-set-up-spf-dkim-and-dmarc-for-a-new-domain</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/email-bounce-codes-explained</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
+  <url><loc>https://www.instantmail.online/guides/how-to-check-email-dns-records-with-instant-mail</loc><lastmod>2026-11-19</lastmod><priority>0.7</priority></url>
 </urlset>

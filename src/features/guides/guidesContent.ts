@@ -1,3 +1,5 @@
+import { clusterGuideSlugs, clusterGuides } from "./clusterGuides";
+import type { GuideCluster } from "./clusterTypes";
 import { extraGuideSlugs, extraGuides } from "./extraGuides";
 
 const baseGuideSlugs = [
@@ -15,9 +17,9 @@ const baseGuideSlugs = [
 
 type BaseGuideSlug = (typeof baseGuideSlugs)[number];
 
-export const guideSlugs = [...baseGuideSlugs, ...extraGuideSlugs] as const;
+export const guideSlugs: string[] = [...baseGuideSlugs, ...extraGuideSlugs, ...clusterGuideSlugs];
 
-export type GuideSlug = (typeof guideSlugs)[number];
+export type GuideSlug = string;
 
 type GuideSection = {
   heading: string;
@@ -38,6 +40,11 @@ export type Guide = {
   intro: string[];
   sections: GuideSection[];
   takeaway: string;
+  // Present on topic-cluster guides only.
+  cluster?: GuideCluster;
+  quickAnswer?: string;
+  demo?: { heading: string; steps: string[]; note?: string };
+  cta?: { label: string; href: string };
 };
 
 export const guidesHub = {
@@ -46,7 +53,7 @@ export const guidesHub = {
     "Read practical guides from Instant Mail about temporary email, spam prevention, verification codes, password safety, data breaches, and protecting your inbox online.",
   h1: "Practical Email Privacy Guides",
   intro:
-    "Clear, useful guides for everyday privacy decisions: when temporary email helps, when it does not, how to handle verification codes, and how to keep your real inbox safer.",
+    "Clear, useful guides on temporary email, verification codes, email testing for developers, and DNS and deliverability: what works, what fails, and how to fix it.",
 };
 
 const author = "Igor Corrêa";
@@ -60,7 +67,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
       "A plain-English explanation of temporary email addresses, how they receive messages, and when they make sense.",
     category: "Email Basics",
     readTime: "5 min read",
-    image: "/guides/what-is-a-temporary-email.png",
+    image: "/guides/what-is-a-temporary-email.webp",
     author,
     updated,
     intro: [
@@ -105,7 +112,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
       "Learn where temporary email is safe, where it is risky, and how to avoid common mistakes with unknown messages.",
     category: "Safety",
     readTime: "6 min read",
-    image: "/guides/is-temporary-email-safe.png",
+    image: "/guides/is-temporary-email-safe.webp",
     author,
     updated,
     intro: [
@@ -150,7 +157,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
       "How to receive sign-up codes and activation links without exposing your main inbox to every website.",
     category: "Verification",
     readTime: "5 min read",
-    image: "/guides/temporary-email-for-verification-codes.png",
+    image: "/guides/temporary-email-for-verification-codes.webp",
     author,
     updated,
     intro: [
@@ -194,7 +201,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
       "Practical habits that reduce spam without making your everyday inbox harder to use.",
     category: "Inbox Hygiene",
     readTime: "7 min read",
-    image: "/guides/how-to-avoid-spam-emails.png",
+    image: "/guides/how-to-avoid-spam-emails.webp",
     author,
     updated,
     intro: [
@@ -238,7 +245,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
       "A clear comparison of disposable inboxes and permanent email accounts, with examples for each.",
     category: "Comparison",
     readTime: "6 min read",
-    image: "/guides/disposable-email-vs-regular-email.png",
+    image: "/guides/disposable-email-vs-regular-email.webp",
     author,
     updated,
     intro: [
@@ -280,7 +287,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
       "What people mean by burner email, how it differs from a temporary inbox, and when it is appropriate.",
     category: "Privacy",
     readTime: "5 min read",
-    image: "/guides/what-is-a-burner-email.png",
+    image: "/guides/what-is-a-burner-email.webp",
     author,
     updated,
     intro: [
@@ -323,7 +330,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
       "A QA-focused guide for testing registration, confirmation emails, onboarding, and password reset flows.",
     category: "Developers",
     readTime: "8 min read",
-    image: "/guides/how-developers-can-test-email-signups.png",
+    image: "/guides/how-developers-can-test-email-signups.webp",
     author,
     updated,
     intro: [
@@ -366,7 +373,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
       "Simple privacy habits that make your email address harder to abuse, leak, or target.",
     category: "Privacy",
     readTime: "7 min read",
-    image: "/guides/how-to-protect-your-email-address-online.png",
+    image: "/guides/how-to-protect-your-email-address-online.webp",
     author,
     updated,
     intro: [
@@ -409,7 +416,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
       "Understand data breaches, what attackers usually obtain, and what you can do before and after a leak.",
     category: "Security",
     readTime: "8 min read",
-    image: "/guides/what-is-a-data-breach-and-how-to-prevent-it.png",
+    image: "/guides/what-is-a-data-breach-and-how-to-prevent-it.webp",
     author,
     updated,
     intro: [
@@ -453,7 +460,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
       "A quick tutorial for creating a temporary inbox, copying the address, and reading messages without opening an account.",
     category: "Tutorial",
     readTime: "4 min read",
-    image: "/guides/how-to-create-a-temp-mail-without-registration.png",
+    image: "/guides/how-to-create-a-temp-mail-without-registration.webp",
     author,
     updated,
     videoId: "fEG45V7jZi0",
@@ -495,6 +502,7 @@ const baseGuides: Record<BaseGuideSlug, Guide> = {
 export const guides = {
   ...baseGuides,
   ...extraGuides,
+  ...Object.fromEntries(clusterGuides.map((guide) => [guide.slug, guide])),
 } as Record<GuideSlug, Guide>;
 
 export function isGuideSlug(value: string | undefined): value is GuideSlug {

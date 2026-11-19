@@ -1,3 +1,4 @@
+import type { GuideCluster } from "./clusterTypes";
 import type { Guide, GuideSlug } from "./guidesContent";
 
 type ResourceLink = {
@@ -200,9 +201,24 @@ const slugReferences: Partial<Record<GuideSlug, ResourceLink[]>> = {
   "email-aliases-vs-temporary-email": [references.hibp, references.ftcPhishing],
 };
 
+const clusterTools: Record<GuideCluster, ResourceLink[]> = {
+  "temporary-email": [instantMailHome, tenMinuteMail, toolsHub],
+  "verification-codes": [instantMailHome, tenMinuteMail, passwordGenerator],
+  "developer-testing": [instantMailHome, dnsChecker, toolsHub],
+  "email-deliverability": [dnsChecker, instantMailHome, toolsHub],
+};
+
+const clusterReferences: Record<GuideCluster, ResourceLink[]> = {
+  "temporary-email": [references.hibp, references.ftcPhishing],
+  "verification-codes": [references.nistPasswords, references.ftcPhishing],
+  "developer-testing": [references.cloudflareDns, references.nistPasswords],
+  "email-deliverability": [references.cloudflareDnsTypes, references.cloudflareDns],
+};
+
 export function getGuideResources(slug: GuideSlug, guide: Guide): GuideResources {
-  const tools = slugTools[slug] ?? [toolsHub];
-  const referencesForGuide = slugReferences[slug] ?? defaultReferences;
+  const tools = slugTools[slug] ?? (guide.cluster ? clusterTools[guide.cluster] : [toolsHub]);
+  const referencesForGuide =
+    slugReferences[slug] ?? (guide.cluster ? clusterReferences[guide.cluster] : defaultReferences);
 
   if (guide.category === "DNS & Email") {
     return { tools, references: referencesForGuide };

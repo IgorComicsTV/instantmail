@@ -180,6 +180,13 @@ function getSeoAlternateCodes(
   return ["en"] as LanguageCode[];
 }
 
+// Guide dates are written as "November 19, 2026"; structured data needs YYYY-MM-DD.
+function guideIsoDate(updated: string) {
+  const time = Date.parse(`${updated} 00:00:00 UTC`);
+
+  return Number.isFinite(time) ? new Date(time).toISOString().slice(0, 10) : "2026-05-30";
+}
+
 export function computeSeoMeta(route: RouteState): SeoMeta {
   const { page, toolsPage, guidesPage, hasLanguagePrefix, isFallbackRoute } = route;
   const content = languages[route.language];
@@ -304,8 +311,8 @@ export function computeSeoMeta(route: RouteState): SeoMeta {
           url: `${CANONICAL_ORIGIN}/instant-mail-icon.png`,
         },
       },
-      dateModified: "2026-05-30",
-      datePublished: "2026-05-30",
+      dateModified: guideIsoDate(guidePage.updated),
+      datePublished: guideIsoDate(guidePage.updated),
       mainEntityOfPage: canonical,
     });
   }

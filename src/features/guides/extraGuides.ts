@@ -52,7 +52,7 @@ const author = "Igor Corrêa";
 const updated = "June 10, 2026";
 
 function guideImage(slug: ExtraGuideSlug) {
-  return `/guides/${slug}.png`;
+  return `/guides/${slug}.webp`;
 }
 
 export const extraGuides: Record<ExtraGuideSlug, ExtraGuide> = {
